@@ -20,7 +20,6 @@ using namespace std;
 typedef float Flt;
 typedef float Vec[3];
 typedef Flt	Matrix[4][4];
-typedef int Weapon;
 typedef int Explosive;
 
 //macros
@@ -90,7 +89,6 @@ struct Player {
 	PowerUp P_UP[3];
 	int Max_Health;
 	int Current_Health;
-	Weapon P_Primary;
 	Explosive P_Secondary;
 
 	Player() {
@@ -109,7 +107,20 @@ struct Player {
 		P_UP[2] = 0;
 	}
 };
-
+struct Weapon{
+    Vec dir;
+    Vec pos;
+    Vec vel;
+    float angle;
+    Weapon(){
+	VecZero(dir);
+        pos[0] = (Flt)(40);
+        pos[1] = (Flt)(40);
+        pos[2] = 0.0f;
+        VecZero(vel);
+        angle = 0.0;
+    }
+};
 struct Bullet {
 	Vec pos;
 	Vec vel;
@@ -137,6 +148,7 @@ const int MAX_BULLETS = 4;
  
 struct Game {
 	Player Player_1;
+	Weapon gun;
 	Bullet *barr;
 	int nbullets;
     int score = 0;
@@ -338,26 +350,28 @@ void check_mouse(XEvent *e, Game *g)
 }
 void pointPlayer(Game *g, int savex, int savey){
         //Make the player point at the cursor
-        float playerx = g->Player_1.pos[0];
-        float playery = g->Player_1.pos[1];
+	g->gun.pos[0] = g->Player_1.pos[0];
+	g->gun.pos[1] = g->Player_1.pos[1];
+        float weaponx = g->gun.pos[0];
+        float weapony = g->gun.pos[1];
 
-        float nDeg = atan(((yres-savey)-(playery))/((savex)-(playerx))) * 180 / PI;
+        float nDeg = atan(((yres-savey)-(weapony))/((savex)-(weaponx))) * 180 / PI;
 
-        if(savex > playerx && (yres - savey) > playery){
+        if(savex > weaponx && (yres - savey) > weapony){
             nDeg += 180;
         }
-        if(savex > playerx && (yres - savey) < playery){
+        if(savex > weaponx && (yres - savey) < weapony){
             nDeg -= 180;
         }
-        if(g->Player_1.angle > 360.f)
-            g->Player_1.angle = 360.0f;
-        if (g->Player_1.angle <= 360.0f){
+        if(g->gun.angle > 360.f)
+            g->gun.angle = 360.0f;
+        if (g->gun.angle <= 360.0f){
             if(nDeg > 270)
                 nDeg -= 360;
-            g->Player_1.angle = nDeg + 90;
+            g->gun.angle = nDeg + 90;
         }
-        if (g->Player_1.angle < 0.0f)
-            g->Player_1.angle += 360.0f;
+        if (g->gun.angle < 0.0f)
+            g->gun.angle += 360.0f;
 }
 
 int check_keys(XEvent *e)
@@ -462,6 +476,7 @@ void physics(Game *g)
 		g->Player_1.angle -= 4.0f;
 		if (g->Player_1.angle < 0.0f)
 			g->Player_1.angle += 360.0f;
+
 	}
 	if (keys[XK_w]) {
 		//convert Player_1 angle to radians
@@ -494,12 +509,12 @@ void physics(Game *g)
 			//shoot a bullet...
 			Bullet *b = &g->barr[g->nbullets];
 			timeCopy(&b->time, &bt);
-			b->pos[0] = g->Player_1.pos[0];
-			b->pos[1] = g->Player_1.pos[1];
-			b->vel[0] = g->Player_1.vel[0];
-			b->vel[1] = g->Player_1.vel[1];
+			b->pos[0] = g->gun.pos[0];
+			b->pos[1] = g->gun.pos[1];
+			b->vel[0] = g->gun.vel[0];
+			b->vel[1] = g->gun.vel[1];
 			//convert Player_1 angle to radians
-			Flt rad = ((g->Player_1.angle+90.0f) / 360.0f) * PI * 2.0f;
+			Flt rad = ((g->gun.angle+90.0f) / 360.0f) * PI * 2.0f;
 			//convert angle to a vector
 			Flt xdir = cos(rad);
 			Flt ydir = sin(rad);
