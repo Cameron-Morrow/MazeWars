@@ -202,6 +202,7 @@ int main(int argc, char *argv[])
 	cleanup_fonts();
 	logClose();
 	release_sounds();
+	convertPPMtoPNG();
 	return 0;
 }
 
@@ -300,6 +301,8 @@ void init_opengl(void)
 	//personImage1 = characterSelection(characterSelected);
 	//job_opengl(personImage1, personTexture1);
 	//job_opengl(personImage2, personTexture2);
+
+	convertPNGtoPPM();
 
 	string characterSelected = "red";
 	personImage1 = characterSelection(characterSelected);

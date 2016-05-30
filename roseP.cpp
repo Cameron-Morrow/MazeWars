@@ -16,6 +16,9 @@
 #include </usr/include/AL/alut.h>
 #include <cmath>
 #include "game_objects.h"
+#include "roseP.h"
+#include <sys/syscall.h>
+#include <unistd.h>
 ALuint alSource[20];
 ALuint alBuffer[20];
 
@@ -267,7 +270,7 @@ int maze[24][24] = {{1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1},
                 {1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1},
                 {1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1}};
 
-int maze_collision(Game *g) {
+void maze_collision(Game *g) {
     //for (int row = 0; row < 24; row++) {
     //    for (int col = 0; col < 24; col++) {
     //        if (maze[row][col] == 1) {
@@ -288,6 +291,23 @@ int maze_collision(Game *g) {
         //std::cout << "y: " << y << std::endl;        
     }
 
+}
+
+void convertPNGtoPPM() {
+    std::cout << "converting" << std::endl;
+    system("mogrify -format ppm images/*.png");
+    system("mogrify -format ppm parallax/*.png");
+}
+
+void convertPPMtoPNG() {
+    system("mogrify -format png images/*.png");
+    system("mogrify -format png parallax/*.ppm");
+    removePPMImages();
+}
+
+void removePPMImages() {
+    system("rm images/*.ppm");
+    system("rm parallax/*.ppm");
 }
 
 #endif
