@@ -35,6 +35,7 @@ int PAUSE(Game *g, int keys[]);
 void specialKey();
 void endCredits(Game *g, int keys[]);
 void loadEndCreditsTextures();
+void loadLivesSprite();
 struct HealthPack{
     Vec pos;
     int size;
