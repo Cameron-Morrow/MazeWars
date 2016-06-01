@@ -114,8 +114,8 @@ int main(int argc, char *argv[])
 	load_sounds();
 	Game game;
 	gblock_info gbi;
-	gbi.width = 64;
-	gbi.height = 64;
+	gbi.width = 32;
+	gbi.height = 32;
 	gbi.rows = 100;
 	gbi.columns = 100;
 	begin_game(game, gbi);
@@ -604,8 +604,7 @@ int check_keys(XEvent *e)
 
 void physics(Game *g)
 {
-	updateObjGposStat(&g->Player_1);
-	updateObjGposStat(&g->gun);
+	check_gblock_collision(g->Player_1, g, 0.1, 0.1);
 
 	struct timespec bt;
 	clock_gettime(CLOCK_REALTIME, &bt);
@@ -623,6 +622,13 @@ void physics(Game *g)
 		//move the bullet
 		b->stats.gpos[0] += 6*b->stats.vel[0];
 		b->stats.gpos[1] += 6*b->stats.vel[1];
+	}
+	if (keys[XK_z]) {
+		//g->mon[6] = new Monster;
+		g->mon[6].type = 0;
+		g->mon[6].mode = 1;
+		g->mon[6].stats.gpos[0] = g->Player_1.stats.gpos[0] + 25;
+		g->mon[6].stats.gpos[1] = g->Player_1.stats.gpos[1] + 25;
 	}
 	if (keys[XK_p]) {
 		timeSpanT6 = timeDiff(&timeT6, &timeCurrent);
@@ -810,7 +816,9 @@ void render(Game *g)
 	//drawHealthPack(500, 400, 0, g);
 	//drawHealthPack(100, 800, 0, g);
 	float w = personImage1->width/4;
- 
+
+	renderEnemy(g->mon[6], g);
+
 	if (g->Player_1.gameOver == false)
 		renderCharacter(person, g, w, keys, personTexture1); 
 

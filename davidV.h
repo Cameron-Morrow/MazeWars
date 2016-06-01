@@ -165,6 +165,113 @@ bool checkPlayerDistanceOType(OType *otype, Game *g, float xcheck, float ycheck)
 	}
 	return false;
 }
+template <typename C>
+void calculateEnemy(C c, Game *g)
+{
+	if (checkPlayerDistanceOType(c, g, g->g_xres/2, g->g_yres/2)) {
+		if (checkPlayerDistanceOType(c, g, 300, 300)) {
+			c.pursuit = true;
+		}
+	}
+}
+
+template <typename C>
+void getEnemyTexCoords(C &c, int type, float &x1, float &x2,
+							float &y1, float &y2)
+{
+	float yc = type * 160;
+	float mode = c.mode * 32;
+	y1 = (yc + mode + 32)/640;
+	y2 = (yc + mode)/640;
+	if (c.stats.animationSpan >= 100) {
+		c.stats.animationSpan = 0.0;
+		clock_gettime(CLOCK_REALTIME, &c.stats.animationStart);
+	} else if (true) {
+		if (c.stats.animationSpan < 10.0) {
+			x1 = 32/320;
+			x2 = 0;
+			return;
+		} else if (c.stats.animationSpan < 20.0) {
+			x1 = 64/320;
+			x2 = 32/320;
+			return;
+		} else if (c.stats.animationSpan < 30.0) {
+			x1 = 96/320;
+			x2 = 64/320;
+			return;
+		} else if (c.stats.animationSpan < 40.0) {
+			x1 = 128/320;
+			x2 = 96/320;
+			return;
+		} else if (c.stats.animationSpan < 50.0) {
+			x1 = 160/320;
+			x2 = 128/320;
+			return;
+		} else if (c.stats.animationSpan < 60.0) {
+			x1 = 192/320;
+			x2 = 160/320;
+			return;
+		} else if (c.stats.animationSpan < 70.0) {
+			x1 = 224/320;
+			x2 = 192/320;
+			return;
+		} else if (c.stats.animationSpan < 80.0) {
+			x1 = 256/320;
+			x2 = 224/320;
+			return;
+		} else if (c.stats.animationSpan < 90.0) {
+			x1 = 288/320;
+			x2 = 256/320;
+			return;
+		} else if (c.stats.animationSpan < 100.0) {
+			x1 = 1;
+			x2 = 288/320;
+			return;
+		}
+	} else {
+    		x1 = 32/320;
+    		x2 = 0;
+		return;
+	}
+	clock_gettime(CLOCK_REALTIME, &c.stats.animationCurrent);
+	c.stats.animationSpan += timeDiff(&c.stats.animationStart,
+		&c.stats.animationCurrent);
+}
+
+template <typename C>
+void renderEnemy(C &c, Game *g)
+{
+	//if (checkPlayerDistanceOType(c, g, g->g_xres/2, g->g_yres/2)) {
+	    int type = c.type;
+	    float xdist, ydist;
+	    xdist = g->g_xres/2;// + (c.stats.gpos[0] - g->Player_1.stats.gpos[0] -
+		    //c.stats.width);
+	    ydist = g->g_yres/2;// + (c.stats.gpos[1] - g->Player_1.stats.gpos[1] -
+		    //c.stats.width);
+	    float size = 32;
+	    float cx1, cx2, cy1, cy2;
+	    getEnemyTexCoords(c, type, cx1, cx2, cy1, cy2);
+	    if (c.stats.vel[0] > 0) {}
+	    else { cx1 = cx1 * -1; cx2 = cx2 * -1; }
+	    glPushMatrix();
+	    glTranslatef(xdist, ydist, 0.0f);
+	    glEnable(GL_ALPHA_TEST);
+	    glAlphaFunc(GL_GREATER, 0.0f);
+	    glBindTexture(GL_TEXTURE_2D, g->enemyTextures);
+	    glBegin(GL_QUADS);
+	    	glTexCoord2f(cx1, cy1); glVertex2f(-size, -size);
+	    	glTexCoord2f(cx1, cy2); glVertex2f(-size, size);
+	    	glTexCoord2f(cx2, cy2); glVertex2f(size, size);
+	    	glTexCoord2f(cx2, cy1); glVertex2f(size, -size);
+		glEnd();
+		glDisable(GL_ALPHA_TEST);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+	//}
+}
+
+
+
 template <typename OType>
 bool checkBlockDistanceOType(OType otype, gblock block, float xcheck, float ycheck)
 {
@@ -250,8 +357,10 @@ void check_gblock_collision(OType otype, Game *g, float xcheck, float ycheck)
 	for (int i = 0; i < nrows; i++) {
 		for (int j = 0; j < ncols; j++) {
 			if (g->blocks[i][j].assigned == 1) {
-				if (checkBlockDistanceOType(otype,g->blocks[i][j],xcheck,ycheck)) {
-					
+				if (checkBlockDistanceOType(otype,g->blocks[i][j],
+							xcheck,ycheck)) {
+					otype.stats.gpos[0] += otype.stats.vel[0] * -1;
+					otype.stats.gpos[1] += otype.stats.vel[1] * -1;
 				}
 			}
 		}

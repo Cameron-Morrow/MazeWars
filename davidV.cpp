@@ -312,112 +312,13 @@ void getBlockTexCoords(int type, float &x1, float &x2, float &y1, float &y2) {
 	}
 }
 
-template <typename C>
-void calculateEnemy(C c, Game *g)
-{
-	if (checkPlayerDistanceOType(c, g, g->g_xres/2, g->g_yres/2)) {
-		if (checkPlayerDistanceOType(c, g, 300, 300)) {
-			c.pursuit = true;
-		}
-	}
-}
-
-template <typename C>
-void getEnemyTexCoords(C &c, int type, float &x1, float &x2,
-							float &y1, float &y2)
-{
-	float yc = type * 160;
-	float mode = c.mode * 32;
-	y1 = yc + mode + 32;
-	y2 = yc + mode;
-	if (c.stats.animationSpan >= 100) {
-		c.stats.animationSpan = 0.0;
-		clock_gettime(CLOCK_REALTIME, &c.stats.animationStart);
-	} else  if (c.stats.vel[0] != 0 || c.stats.vel[1] != 0) {
-		if (c.stats.animationSpan < 10.0) {
-			x1 = 32/320;
-			x2 = 0;
-		} else if (c.stats.animationSpan < 20.0) {
-			x1 = 64/320;
-			x2 = 32/320;
-		} else if (c.stats.animationSpan < 30.0) {
-			x1 = 96/320;
-			x2 = 64/320;
-		} else if (c.stats.animationSpan < 40.0) {
-			x1 = 128/320;
-			x2 = 96/320;
-		} else if (c.stats.animationSpan < 50.0) {
-			x1 = 160/320;
-			x2 = 128/320;
-		} else if (c.stats.animationSpan < 60.0) {
-			x1 = 192/320;
-			x2 = 160/320;
-		} else if (c.stats.animationSpan < 70.0) {
-			x1 = 224/320;
-			x2 = 192/320;
-		} else if (c.stats.animationSpan < 80.0) {
-			x1 = 256/320;
-			x2 = 224/320;
-		} else if (c.stats.animationSpan < 90.0) {
-			x1 = 288/320;
-			x2 = 256/320;
-		} else if (c.stats.animationSpan < 100.0) {
-			x1 = 1;
-			x2 = 288/320;
-		}
-	} else {
-		x1 = 32/320;
-		x2 = 0;
-		return;
-	}
-
-	clock_gettime(CLOCK_REALTIME, &c.stats.animationCurrent);
-	c.stats.animationSpan += timeDiff(&c.stats.animationStart,
-								&c.stats.animationCurrent);
-}
-
-template <typename C>
-void renderEnemy(C &c, Game *g)
-{
-	if (checkPlayerDistanceOType(c, g, g->g_xres/2, g->g_yres/2)) {
-		int type = c.stats.type;
-		float xdist, ydist;
-		xdist = g->g_xres/2 + (c.stats.gpos[0] - g->Player_1.stats.gpos[0] -
-				c.stats.width);
-		ydist = g->g_yres/2 + (c.stats.gpos[1] - g->Player_1.stats.gpos[1] -
-				c.stats.width);
-		float size = c.stats.width;
-		float cx1, cx2, cy1, cy2;
-		getEnemyTexCoords(c, type, cx1, cx2, cy1, cy2);
-		if (c.stats.vel[0] > 0) {}
-		else { cx1 = cx1 * -1; cx2 = cx2 * -1; }
-		glPushMatrix();
-		glTranslatef(xdist, ydist, 0.0f);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glBindTexture(GL_TEXTURE_2D, g->enemyTextures);
-		glBegin(GL_QUADS);
-			glTexCoord2f(cx2, cy1); glVertex2f(-size, -size);
-			glTexCoord2f(cx2, cy2); glVertex2f(-size, size);
-			glTexCoord2f(cx1, cy2); glVertex2f(size, size);
-			glTexCoord2f(cx1, cy1); glVertex2f(size, -size);
-			/*glTexCoord2f(cx2, cy2); glVertex2f(-size, -size);
-			glTexCoord2d(cx1, cy2); glVertex2f(-size, size);
-			glTexCoord2d(cx1, cy1); glVertex2f(size, size);
-			glTexCoord2f(cx2, cy1); glVertex2f(size, -size);*/
-		glEnd();
-		glDisable(GL_ALPHA_TEST);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glPopMatrix();	
-	}
-}
 
 void init_textures(Game &game) {
 	Ppmimage *blockSpriteSheet;
        	blockSpriteSheet = ppm6GetImage((char*)"images/wallTexture64.ppm");
 	//create opengl texture elements for the blockspritesheet
-    /*Ppmimage *enemySpriteSheet;
-    	enemySpriteSheet = ppm6GetImage((char*)"images/enemysheet.ppm");*/
+    Ppmimage *enemySpriteSheet;
+    	enemySpriteSheet = ppm6GetImage((char*)"images/enemysheet.ppm");
 	glGenTextures(1, &game.blockTexture);
 	
 	//person
@@ -433,7 +334,7 @@ void init_textures(Game &game) {
 			GL_UNSIGNED_BYTE, blockData);
 	free(blockData);
 
-/*	glGenTextures(1, &game.enemyTextures);
+	glGenTextures(1, &game.enemyTextures);
 
 	w = enemySpriteSheet->width;
 	h = enemySpriteSheet->height;
@@ -445,7 +346,8 @@ void init_textures(Game &game) {
 			GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, 
 			GL_UNSIGNED_BYTE, enemyData);
-	free(enemyData);*/
+	free(enemyData);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 /////
 
@@ -553,7 +455,12 @@ void drawPlayer(Player p)
 void assign_gblock(gblock &block, Stats &stats, int type, int row, int col)
 {
 	block.type = type;
-	block.assigned = 1;
+	if (type < 16) {
+	    block.assigned = 1;
+	}
+	else {
+	    block.assigned = 0;
+	}
 	stats.gpos[0] = row * 50.0;
 	stats.gpos[1] = col * 50.0;
 	printf("Block[%d][%d] located at x(%f) y(%f)\n",
@@ -683,6 +590,8 @@ void begin_game(Game& game, gblock_info& gbi)
 			create_gblock(game.blocks[i][j], dungeon[i][j].subtype, i, j);
 		}
 	}
+	game.Player_1.stats.gpos[0] = init.startrow*gbi.width;
+	game.Player_1.stats.gpos[1] = init.startcol*gbi.width;
 }
 
 //
@@ -741,15 +650,15 @@ bool checkDistanceBlock(Game *g, gblock block, float xcheck, float ycheck)
 	if (abs(player.stats.gpos[0] - block.stats.gpos[0] +
 		block.stats.width) < xcheck) {
 		indistancex = true;
-}
-if (abs(player.stats.gpos[1] - block.stats.gpos[1] +
-	block.stats.width) < ycheck) {
-	indistancey = true;
-}
-if (indistancex && indistancey) {
-	return true;
-}
-return false;
+	}
+	if (abs(player.stats.gpos[1] - block.stats.gpos[1] +
+		block.stats.width) < ycheck) {
+		indistancey = true;
+	}
+	if (indistancex && indistancey) {
+		return true;
+	}
+	return false;
 }
 
 bool checkDistanceStats(Game *g, Stats stats, float xcheck, float ycheck)
@@ -1398,7 +1307,7 @@ void initStartBlocks(DRules rules, DInit init, DSpecs specs,
  {
  	switch(direction) {
  		case 0:
-			printf("1) s_row = %d s_col = %d\n",s_row, s_col);
+			//printf("1) s_row = %d s_col = %d\n",s_row, s_col);
  		dungeon[s_row-1][s_col].maintype = maintype;
  		dungeon[s_row-1][s_col].blockc.direction = direction;
  		dungeon[s_row-1][s_col].blockc.row = s_row-1;
@@ -1409,7 +1318,7 @@ void initStartBlocks(DRules rules, DInit init, DSpecs specs,
  		return dungeon[s_row-1][s_col];
 			//break;
  		case 1:
-			printf("1) s_row = %d s_col = %d\n",s_row, s_col);
+			//printf("1) s_row = %d s_col = %d\n",s_row, s_col);
  		dungeon[s_row][s_col+1].maintype = maintype;
  		dungeon[s_row][s_col+1].blockc.direction = direction;
  		dungeon[s_row][s_col+1].blockc.row = s_row;
@@ -1420,7 +1329,7 @@ void initStartBlocks(DRules rules, DInit init, DSpecs specs,
  		return dungeon[s_row][s_col+1];
 			//break;
  		case 2:
-			printf("1) s_row = %d s_col = %d\n",s_row, s_col);
+			//printf("1) s_row = %d s_col = %d\n",s_row, s_col);
  		dungeon[s_row + 1][s_col].maintype = maintype;
  		dungeon[s_row + 1][s_col].blockc.direction = direction;
  		dungeon[s_row + 1][s_col].blockc.row = s_row + 1;
@@ -1431,7 +1340,7 @@ void initStartBlocks(DRules rules, DInit init, DSpecs specs,
  		return dungeon[s_row + 1][s_col];
 			//break;
  		case 3:
-			printf("1) s_row = %d s_col = %d\n",s_row, s_col);
+			//printf("1) s_row = %d s_col = %d\n",s_row, s_col);
  		dungeon[s_row][s_col-1].maintype = maintype;
  		dungeon[s_row][s_col-1].blockc.direction = direction;
  		dungeon[s_row][s_col-1].blockc.row = s_row;
@@ -1501,7 +1410,7 @@ void initStartBlocks(DRules rules, DInit init, DSpecs specs,
  		test.blockc.row, test.blockc.col, dungeon, event_counters[2]);
 
  	DFork turn = getNewFork(event);
- 	for (int i = 0; i < (specs.rows + specs.cols)*sqrt(specs.cols); i++) {
+ 	for (int i = 0; i < (specs.rows + specs.cols)*sqrt(specs.cols*2); i++) {
  		test.blockc.row = turn.forkpos[0];
  		test.blockc.col = turn.forkpos[1];
  		test.blockc.direction = DrandomDirection(test.blockc.direction);
@@ -1509,13 +1418,13 @@ void initStartBlocks(DRules rules, DInit init, DSpecs specs,
  			test.blockc.col, dungeon, event_counters[2]);
  		turn = getNewFork(event);
  	}
- 	int tolerance = 8;
+ 	int tolerance = 6;
 
  	Block block;
  	vector<Block> dungeonCols(specs.cols, block);
  	vector<vector<Block> > newdungeon(specs.rows, dungeonCols);
 
- 	for (int i = 0; i < 1; i++) {
+ 	for (int i = 0; i < 100; i++) {
  		newdungeon = newParsedMap(specs, tolerance, dungeon);
  		dungeon = newdungeon;
  	}
@@ -1719,6 +1628,7 @@ vector<vector<Block> > newParsedMap(DSpecs specs, int tolerance,
 	vector<vector<Block> > &dungeon)
 {
 	Block block;
+	struct timespec rtime;
 	vector<Block> dungeonCols(specs.cols, block);
 	vector<vector<Block> > newdungeon(specs.rows, dungeonCols);
 	for (int i = 0; i < specs.rows - 1; i++) {
@@ -1731,13 +1641,20 @@ vector<vector<Block> > newParsedMap(DSpecs specs, int tolerance,
 				} else {
 					newdungeon[i][j].maintype = 1;
 				}
+			} else if (nbs > tolerance + 2) {
+					newdungeon[i][j].maintype = 1;
 			} else {
-				if (nbs > tolerance + 2) {
+					newdungeon[i][j].maintype = 0;
+			}
+			if (nbs == tolerance) {
+				srandByTime(rtime);
+				int prob = rand()%100;
+				if (prob < 0.5) {
 					newdungeon[i][j].maintype = 1;
 				} else {
 					newdungeon[i][j].maintype = 0;
 				}
-			}
+			}	
 		}
 	}
 	for (int i = 0; i < specs.rows - 1; i++) {
@@ -1805,6 +1722,7 @@ int parseToBlockTextures(vector<vector<Block> > &dungeon,
 			return type;
 		}
 	}
+	return type;
 }
 
 //

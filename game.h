@@ -5,6 +5,7 @@
 #include <GL/glx.h>
 #include "defs.h"
 #include "ppm.h"
+#include <ctime>
 
 const int MAX_BULLETS = 4;
 
@@ -19,6 +20,8 @@ struct Stats {
 	Vec vel;
 	Vec gpos;
 	Vec color;
+	struct timespec animationCurrent, animationStart;
+	double animationSpan;
     Ppmimage* texture;
     GLuint obj_texture;
 	const char* image;

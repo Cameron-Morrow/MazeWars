@@ -126,6 +126,8 @@ struct Monster {
 	bool alive = true;
 	bool pursuit = true;
 	double spawnPos[2];
+	int mode;
+	int type;
 	Monster() {
 	    alive = 1;
 	}
@@ -151,14 +153,14 @@ struct Game {
 	Player Player_1;
 	Weapon gun;
 	Bullet *barr;
-	Monster mon[5];
+	Monster mon[99];
 	int g_xres;
 	int g_yres;
 	int nbullets;
 	int score = 0;
 	GLuint blockTexture;
-    GLuint enemyTextures;
-    gblock **blocks;
+	GLuint enemyTextures;
+	gblock **blocks;
 	gblock_info game_info;
 	struct timespec bulletTimer;
 	Game() {
