@@ -40,6 +40,4 @@ struct HealthPack{
     int size;
 };
 
-static int CameronKey = 0;
-
 #endif
