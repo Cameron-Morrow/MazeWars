@@ -184,7 +184,10 @@ void drawDiamondBack(int x)
 	glPopMatrix();
 }
 void drawDiamond(int x)
-{	
+{
+    	glPushMatrix();
+	glTranslatef(res[0], 0, 0);
+
 	glColor3ub(180, 226, 175);
 	glBegin(GL_POLYGON);
 		glVertex2i(-320+x, 40);
@@ -905,8 +908,8 @@ void renderPauseBackground()
 	glPopMatrix();
 }
 
-Ppmimage *CreditsImages[12] = {NULL};
-GLuint CreditsTextures[12];
+Ppmimage *CreditsImages[15] = {NULL};
+GLuint CreditsTextures[15];
 
 void loadEndCreditsTextures()
 {
@@ -1086,17 +1089,17 @@ void endCredits(Game *g, int keys[])
 	static float jmpspd = 0;
 	static int jmp = 0;
 	static float mov = 0;
-	if (keys[XK_Left] && mov < 0)
-		mov += 0.3;
-	if (keys[XK_Right] && mov > -1271)
-		mov -= 0.3;
+	if (keys[XK_a] && mov < 0)
+		mov += 1;
+	if (keys[XK_d] && mov > -1271)
+		mov -= 1;
 	if (keys[XK_space] && !jmp && jmpspd == 0) {
 		jmp = 1;
 	}
 	if (jmp) {
-		jmpspd += 2;
+		jmpspd += 5;
 	} else if (jmpspd > 0) {
-		jmpspd-=2;
+		jmpspd-=5;
 	}
 	if (jmpspd >= 150) {
 		jmpspd = 150;
@@ -1114,7 +1117,6 @@ void endCredits(Game *g, int keys[])
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, CreditsTextures[0]);
 	glTranslatef(mov, 0, 0);
-	glScalef(1, 1, 1);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glBegin(GL_QUADS);
@@ -1133,7 +1135,6 @@ void endCredits(Game *g, int keys[])
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, CreditsTextures[1]);
 	glTranslatef(mov*0.5, 0, 0);
-	glScalef(1, 1, 1);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
 
@@ -1146,14 +1147,13 @@ void endCredits(Game *g, int keys[])
 
 	glEnd();
 	glPopMatrix();
-        	
+
 	w = CreditsImages[2]->width;
 	h = CreditsImages[2]->height;
 	
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, CreditsTextures[2]);
 	glTranslatef(mov*3, 0, 0);
-	glScalef(1, 1, 1);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glBegin(GL_QUADS);
@@ -1165,14 +1165,32 @@ void endCredits(Game *g, int keys[])
 
 	glEnd();
 	glPopMatrix();
-	/************DUDE*********************/
+
+	w = CreditsImages[2]->width;
+        h = CreditsImages[2]->height;
+        
+        glPushMatrix();
+        glBindTexture(GL_TEXTURE_2D, CreditsTextures[2]);
+        glTranslatef(mov*3+7000, 0, 0);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER, 0.0f);
+        glBegin(GL_QUADS);
+
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(0 , h/2+ res[1]/2);
+        glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
+        glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
+        glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);        
+
+        glEnd();
+        glPopMatrix();
+
+	/***********DUDE********************/
 	w = CreditsImages[11]->width;
 	h = CreditsImages[11]->height;
 	
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, CreditsTextures[11]);
 	glTranslatef(0, jmpspd, 0);
-	glScalef(1, 1, 1);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glBegin(GL_QUADS);
@@ -1184,27 +1202,27 @@ void endCredits(Game *g, int keys[])
 			CreditsSpan = 0.0;
 			clock_gettime(CLOCK_REALTIME, &CreditsTime);
 		}
-		if (CreditsSpan < 10 && (keys[XK_Right] || keys[XK_Left])) {
+		if (CreditsSpan < 10 && (keys[XK_d] || keys[XK_a])) {
 			glTexCoord2f(0.0f, 0.0f); glVertex2f(res[0]/2 - ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.1666f, 0.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.1666f, 1.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - 2*h + h/2 + h/4);
 			glTexCoord2f(0.0f, 1.0f); glVertex2f(res[0]/2 - ((w/2)*0.1666), res[1]/2 - 2*h + h/2 + h/4);
-		} else if (CreditsSpan < 40 && (keys[XK_Right] || keys[XK_Left])) {
+		} else if (CreditsSpan < 40 && (keys[XK_d] || keys[XK_a])) {
 			glTexCoord2f(0.1666f, 0.0f); glVertex2f(res[0]/2 - ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.333f, 0.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.333f, 1.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - 2*h + h/2 + h/4);
 			glTexCoord2f(0.1666f, 1.0f); glVertex2f(res[0]/2 - ((w/2)*0.1666), res[1]/2 - 2*h + h/2 + h/4);
-		} else if (CreditsSpan < 60 && (keys[XK_Right] || keys[XK_Left])) {
+		} else if (CreditsSpan < 60 && (keys[XK_d] || keys[XK_a])) {
 			glTexCoord2f(0.3333f, 0.0f); glVertex2f(res[0]/2 - ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.50f, 0.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.50f, 1.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - 2*h + h/2 + h/4);
 			glTexCoord2f(0.3333f, 1.0f); glVertex2f(res[0]/2 - ((w/2)*0.1666), res[1]/2 - 2*h + h/2 + h/4);
-		} else if (CreditsSpan < 80 && (keys[XK_Right] || keys[XK_Left])) {
+		} else if (CreditsSpan < 80 && (keys[XK_d] || keys[XK_a])) {
 			glTexCoord2f(0.50f, 0.0f); glVertex2f(res[0]/2 - ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.666f, 0.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.666f, 1.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - 2*h + h/2 + h/4);
 			glTexCoord2f(0.50f, 1.0f); glVertex2f(res[0]/2 - ((w/2)*0.1666), res[1]/2 - 2*h + h/2 + h/4);
-		} else if ((keys[XK_Right] || keys[XK_Left])) {
+		} else if ((keys[XK_d] || keys[XK_a])) {
 			glTexCoord2f(0.666f, 0.0f); glVertex2f(res[0]/2 - ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.8333f, 0.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - h + h/2 + h/4);
 			glTexCoord2f(0.8333f, 1.0f); glVertex2f(res[0]/2 + ((w/2)*0.1666), res[1]/2 - 2*h + h/2 + h/4);
@@ -1239,6 +1257,26 @@ void endCredits(Game *g, int keys[])
 	glEnd();
 	glPopMatrix();
 	/////////////////////////////////////////////////////////////////////
+        w = CreditsImages[3]->width;
+        h = CreditsImages[3]->height;
+        
+        glPushMatrix();
+        glBindTexture(GL_TEXTURE_2D, CreditsTextures[3]);
+        glTranslatef(mov*5+7000-20, 0, 0);
+        glScalef(1, 1, 1);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER, 0.0f);
+        glBegin(GL_QUADS);
+        
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(0 , h/2+ res[1]/2);
+        glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
+        glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
+        glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
+
+        glEnd();
+        glPopMatrix();
+        /////////////////////////////////////////////////////////////////////
+
 	w = CreditsImages[4]->width;
 	h = CreditsImages[4]->height;
 	
@@ -1258,6 +1296,28 @@ void endCredits(Game *g, int keys[])
 	glEnd();
 	glPopMatrix();
 	/////////////////////////////////////////////////////////////////////
+	
+        w = CreditsImages[4]->width;
+        h = CreditsImages[4]->height;
+
+        glPushMatrix();
+        glBindTexture(GL_TEXTURE_2D, CreditsTextures[4]);
+        glTranslatef(mov*10+7000, 0, 0);
+        glScalef(1, 1, 1);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER, 0.0f);
+        glBegin(GL_QUADS);
+
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(0 , h/2+ res[1]/2);
+        glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
+        glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
+        glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
+
+        glEnd();
+        glPopMatrix();
+        /////////////////////////////////////////////////////////////////////
+	
+
 	//Cam
 	w = CreditsImages[6]->width;
 	h = CreditsImages[6]->height;
@@ -1359,4 +1419,3 @@ void endCredits(Game *g, int keys[])
 	glPopMatrix();
 }
 #endif
-
