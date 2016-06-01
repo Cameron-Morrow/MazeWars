@@ -714,7 +714,7 @@ int PAUSE(Game *g, int keys[])
 		kchkr = 3;
 	renderPauseBackground();
 	renderPauseButtons(kchkr);
-	kchkr = kchkr%3;
+	kchkr = kchkr%4;
 	if (keys[XK_Return] && kchkr == 2) {
 		Restart(g);
 	}
@@ -1142,6 +1142,11 @@ static double CreditsSpan = 0.0;
 
 void endCredits(Game *g, int keys[])
 {
+	static bool creditsMusic = false;
+	if (!creditsMusic) {
+		play_sounds(19, 1);
+		creditsMusic = true;
+	}
 	Rect u;
 	u.bot = -res[1]/2;
 	u.left = -res[0]/2;
