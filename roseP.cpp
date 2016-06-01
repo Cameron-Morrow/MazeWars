@@ -19,6 +19,11 @@
 ALuint alSource[20];
 ALuint alBuffer[20];
 
+static float Volume = 0.0f;
+void getVolume(float V)
+{
+		Volume = V;
+}
 void init_sounds()
 {
     //Check and clear.
@@ -122,12 +127,15 @@ void load_sounds()
     alBuffer[18] = alutCreateBufferFromFile("./sound/c2.wav");
     alGenSources(1, &alSource[18]);
     alSourcei(alSource[18], AL_BUFFER, alBuffer[18]);
+    alBuffer[19] = alutCreateBufferFromFile("./sound/credits.wav");
+    alGenSources(1, &alSource[19]);
+    alSourcei(alSource[19], AL_BUFFER, alBuffer[19]);
 }
 
 void play_sounds(int soundOption)
 {
     //Set volume and pitch.
-    alSourcef(alSource[soundOption], AL_GAIN, 1.0f);
+    alSourcef(alSource[soundOption], AL_GAIN, Volume);
     alSourcef(alSource[soundOption], AL_PITCH, 1.0f);
     alSourcei(alSource[soundOption], AL_LOOPING, AL_FALSE);
 
@@ -137,7 +145,19 @@ void play_sounds(int soundOption)
     }
     alSourcePlay(alSource[soundOption]);
 }
+void play_sounds(int soundOption, int loop)
+{
+    //Set volume and pitch.
+    alSourcef(alSource[soundOption], AL_GAIN, Volume);
+    alSourcef(alSource[soundOption], AL_PITCH, 1.0f);
+    alSourcei(alSource[soundOption], AL_LOOPING, AL_TRUE);
 
+    //No looping for sound.
+    if (alGetError() != AL_NO_ERROR) {
+        printf("Error: Setting Source\n");
+    }
+    alSourcePlay(alSource[soundOption]);
+}
 void bubblez(int radius, int x, int y, float red, float green, float blue)
 {
     static int num = 0;
