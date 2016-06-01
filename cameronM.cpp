@@ -10,6 +10,8 @@
 * I am drawing and handling the health bar and "HUD" 
 * I Draw and move the enemies array and deal with the pause menu and the 
 * winning condition ending credits scene
+* my one compile warning is an unused parameter because i havent displayed the
+* final score yet
 */
 #define PI 3.14159268
 #include "cameronM.h"
@@ -22,7 +24,6 @@ struct timespec timeCurrentC;
 static double timespanC1 = 0.0;
 struct timespec timeC2;
 struct timespec timeCurrentC2;
-static double timespanC2 = 0.0;
 struct timespec timem[5];
 struct timespec timeCurrentm[5];
 static double timespanm[5];
@@ -521,7 +522,8 @@ void monsterMovement(Game *g, int monNum, int startx, int starty)
 	} else {
 		g->mon[monNum].pursuit = false;
 	}
-
+	startx++;
+	starty++;
 	//this is the enemys default movement pattern if not in pursuit mode
 	if (!g->mon[monNum].pursuit || g->Player_1.gameOver) {
 		clock_gettime(CLOCK_REALTIME, &timeCurrentC);
@@ -566,7 +568,9 @@ void monsterGetShot(Game *g, int monNum, int startx, int starty)
 	if (g->mon[monNum].health <= 0) {
 		g->mon[monNum].health = 0;
 		g->mon[monNum].alive = false;
-	}	
+	}
+	startx++;
+	starty++;
 }
 void monsterDamagePlayer(Game *g, int monNum, int startx, int starty)
 {
@@ -581,6 +585,8 @@ void monsterDamagePlayer(Game *g, int monNum, int startx, int starty)
 			g->Player_1.Current_Health -= 5;
 		}
 	}
+	startx++;
+	starty++;
 }
 
 struct timespec animationCurrentc, animationStartc;
@@ -589,6 +595,7 @@ double animationSpanc = 0.0;
 void renderCharacterEnemy(Person personc, Game *g, float w, int keys[], 
 GLuint personTexture1c, int i)
 {
+	keys[XK_g]++;
 	glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
 	glPushMatrix();
 	glTranslatef(personc.pos[0], personc.pos[1], personc.pos[2]);	
@@ -1081,7 +1088,8 @@ struct timespec CreditsCurrent;
 static double CreditsSpan = 0.0;
 
 void endCredits(Game *g, int keys[])
-{	Rect u;
+{
+	Rect u;
 	u.bot = -res[1]/2;
 	u.left = -res[0]/2;
 	u.center = 0;
