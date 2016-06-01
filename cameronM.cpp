@@ -27,7 +27,6 @@ struct timespec timeCurrentC2;
 struct timespec timem[5];
 struct timespec timeCurrentm[5];
 static double timespanm[5];
-
 struct timespec timeCurrentqr;
 struct timespec timeTq;
 static double timeSpanTq = 0.0;
@@ -384,21 +383,48 @@ void drawAmmo(Player x)
 	r.center = 0;
 	ggprint8b(&r, 16, 0x00ffffff, "Ammo:");
 }
+
+Ppmimage *livesImage = {NULL};
+GLuint livesTexture;
+void loadLivesSprite()
+{
+	livesImage = ppm6GetImage((char*)"images/Head.ppm");
+	glGenTextures(1, &livesTexture); 
+	
+	float w, h;
+	//lives texture
+	w = livesImage->width;
+	h = livesImage->height;
+	glBindTexture(GL_TEXTURE_2D, livesTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char *livesData = buildAlphaData(livesImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, livesData);
+	free(livesData);
+	
+	
+}
 void drawLives(int x, int y)
 {
-	glColor3ub(255, 0, 0);
+	glColor3ub(255, 255, 255);
+
+	float w = livesImage->width;
+	float h = livesImage->height;
+	
 	glPushMatrix();
-	glTranslatef(res[0], 60, 0);
+	glBindTexture(GL_TEXTURE_2D, livesTexture);
+	glTranslatef(res[0]-10, 60, 0);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glBegin(GL_QUADS);
 
-	glBegin(GL_POLYGON);
-		glVertex2i(-320+x, 45+y);
-		glVertex2i(-330+x, 60+y);
-		glVertex2i(-325+x, 65+y);
-		glVertex2i(-320+x, 60+y);
-		glVertex2i(-315+x, 65+y);
-		glVertex2i(-310+x, 60+y);
+		glTexCoord2f(0.0f, 0.0f); glVertex2f(-330+x, 60+y);
+		glTexCoord2f(1.0f, 0.0f); glVertex2f(-300+x, 60+y);
+		glTexCoord2f(1.0f, 1.0f); glVertex2f(-300+x, 30+y);
+		glTexCoord2f(0.0f, 1.0f); glVertex2f(-330+x, 30+y);        
+
 	glEnd();
-
 	glPopMatrix();
 }
 void GameOver()
@@ -683,22 +709,48 @@ int PAUSE(Game *g, int keys[])
 		play_sounds(18);
 	}
 	
-	kchkr = kchkr%3;
+	kchkr = kchkr%4;
 	if (kchkr < 0)
-		kchkr = 2;
+		kchkr = 3;
 	renderPauseBackground();
 	renderPauseButtons(kchkr);
 	kchkr = kchkr%3;
-	if (keys[XK_Return] && kchkr == 1) {
+	if (keys[XK_Return] && kchkr == 2) {
 		Restart(g);
 	}
-	if (keys[XK_Return] && kchkr == 2) {
+	if (keys[XK_Return] && kchkr == 3) {
 		return 1;
 	}
 	return 0;
 }
 void renderPauseButtons(int x)
 {
+	glPushMatrix();
+	glTranslatef((res[0]/2), (res[1]/2) + 50 - 15, 0);
+	//change color based on selected or not
+	glColor3ub(160, 160, 160);
+	
+	glBegin(GL_POLYGON);
+		glVertex2i(-90, -15);
+		glVertex2i(-100, -5);
+
+		glVertex2i(-100, 5);
+		glVertex2i(-90, 15);
+
+		glVertex2i(90, 15);
+		glVertex2i(100, 5);
+
+		glVertex2i(100, -5);
+		glVertex2i(90, -15);
+	glEnd();
+	
+	glPopMatrix();
+	Rect q;
+	q.bot = res[1]/2 - 20;
+	q.left = res[0]/2 + 50 - 15;
+	q.center = 0;
+	ggprint8b(&q, 48, 0x00FFFFFF, "MAIN MENU");
+	///////////////////////////////////////////
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2) + 100 - 15, 0);
 	glColor3ub(100, 100, 100);
@@ -723,12 +775,13 @@ void renderPauseButtons(int x)
 	r.left = res[0]/2 - 40;
 	r.center = 0;
 	ggprint16(&r, 48, 0x00000000, "PAUSED");
-	
+
+	///////////////////////////////////////////
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2)- 15, 0);
 	
 	//change color based on selected or not
-	if (x == 0)
+	if (x == 1)
 		glColor3ub(160, 160, 160);
 	else
 		glColor3ub(100, 100, 100);
@@ -753,12 +806,12 @@ void renderPauseButtons(int x)
 	s.left = res[0]/2 - 15;
 	s.center = 0;
 	ggprint8b(&s, 48, 0x00000000, "Save");
-	
+	///////////////////////////////////////////
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2) - 50 - 15, 0);
 	
 	//change color based on selected or not
-	if (x == 1)
+	if (x == 2)
 		glColor3ub(160, 160, 160);
 	else
 		glColor3ub(100, 100, 100);
@@ -783,12 +836,12 @@ void renderPauseButtons(int x)
 	t.left = res[0]/2 - 20;
 	t.center = 0;
 	ggprint8b(&t, 48 , 0x00000000, "Restart");
-	
+	//////////////////////////////////////////////
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2) - 100 - 15, 0);
 	
 	//change color based on selected or not
-	if (x == 2)
+	if (x == 3)
 		glColor3ub(160, 160, 160);
 	else
 		glColor3ub(100, 100, 100);
@@ -961,7 +1014,7 @@ void loadEndCreditsTextures()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, 
 			GL_UNSIGNED_BYTE, cloudData);
 	free(cloudData);
-
+	
 	//mountains texture
 	w = CreditsImages[1]->width;
 	h = CreditsImages[1]->height;
