@@ -213,9 +213,11 @@ void cleanupXWindows(void)
 
 void set_title(void)
 {
+	const char image[15] = {'i','m','a','g','e','s','/','H','e','a','d','.','p','n','g'};
 	//Set the window title bar.
 	XMapWindow(dpy, win);
 	XStoreName(dpy, win, "Maze Wars");
+	XSetIconName(dpy, win, image);
 }
 
 void setup_screen_res(const int w, const int h)
@@ -480,6 +482,7 @@ void init_opengl(void)
 
 
 	loadEndCreditsTextures();
+	loadLivesSprite();
 }
 
 void check_resize(XEvent *e)
