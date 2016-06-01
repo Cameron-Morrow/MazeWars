@@ -3,7 +3,8 @@
 // 04/28/2016
 //
 // My code involves simplifying the render process by introducing draw
-// functions. Current
+// functions. I also generate the random map and am attempting to introduce
+// more AI control to the enemies.
 
 
 #ifndef DRAW_F
@@ -415,8 +416,8 @@ void init_textures(Game &game) {
 	Ppmimage *blockSpriteSheet;
        	blockSpriteSheet = ppm6GetImage((char*)"images/wallTexture64.ppm");
 	//create opengl texture elements for the blockspritesheet
-    Ppmimage *enemySpriteSheet;
-    	enemySpriteSheet = ppm6GetImage((char*)"images/enemysheet.ppm");
+    /*Ppmimage *enemySpriteSheet;
+    	enemySpriteSheet = ppm6GetImage((char*)"images/enemysheet.ppm");*/
 	glGenTextures(1, &game.blockTexture);
 	
 	//person
@@ -432,7 +433,7 @@ void init_textures(Game &game) {
 			GL_UNSIGNED_BYTE, blockData);
 	free(blockData);
 
-	glGenTextures(1, &game.enemyTextures);
+/*	glGenTextures(1, &game.enemyTextures);
 
 	w = enemySpriteSheet->width;
 	h = enemySpriteSheet->height;
@@ -444,7 +445,7 @@ void init_textures(Game &game) {
 			GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, 
 			GL_UNSIGNED_BYTE, enemyData);
-	free(enemyData);
+	free(enemyData);*/
 }
 /////
 

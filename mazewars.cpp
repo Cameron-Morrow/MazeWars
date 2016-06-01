@@ -119,6 +119,7 @@ int main(int argc, char *argv[])
 	gbi.rows = 100;
 	gbi.columns = 100;
 	begin_game(game, gbi);
+	init_textures(game);
 	Joystick joystick;
 	init(&game);
 	printf("%f\n",game.Player_1.stats.color[0]);
