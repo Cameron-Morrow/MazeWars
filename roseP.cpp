@@ -187,11 +187,11 @@ void pressR(Game *g)
 
     int numBubbles = 10;
     for (int i = 0; i < numBubbles; i++) {
-	int radius = rand() % 20 + 10;
-	float red = rand() * 10;
-	float green = rand() * 15;
-	float blue = rand() * 20;
-        bubblez(radius, x, y, red, green, blue);
+	 int radius = rand() % 20 + 10;
+	 float red = rand() * 10;
+	 float green = rand() * 15;
+	 float blue = rand() * 20;
+         bubblez(radius, x, y, red, green, blue);
     }
 }
 
