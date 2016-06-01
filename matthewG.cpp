@@ -394,23 +394,23 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 		clock_gettime(CLOCK_REALTIME, &totStart);
 		fallingBouldersTimer = 0;
 	}
-	if (bouldersSpan > 6) {
+	if (bouldersSpan > 1.6) {
 		bouldersSpan = 0.0;
 		clock_gettime(CLOCK_REALTIME, &bouldersStart);
 	}
-	if (logoSpan > .8) {
+	if (logoSpan > .01) {
 		logoSpan = 0.0;
 		clock_gettime(CLOCK_REALTIME, &logoStart);
 	}
-	if (enterSpan > 1) {
+	if (enterSpan > .00005) {
 		enterSpan = 0.0;
 		clock_gettime(CLOCK_REALTIME, &enterStart);
 	}
-	if (optionsSpan > 1) {
+	if (optionsSpan > .00005) {
 		optionsSpan = 0.0;
 		clock_gettime(CLOCK_REALTIME, &optionsStart);
 	}
-	if (arrowSpan > 1) {
+	if (arrowSpan > 0.00005) {
 		arrowSpan = 0.0;
 		clock_gettime(CLOCK_REALTIME, &arrowStart);
 	}
@@ -443,7 +443,7 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 	clock_gettime(CLOCK_REALTIME, &bouldersCurrent);
 	bouldersSpan += timeDiff(&bouldersStart, &bouldersCurrent);
 
-	if (scroll  > -yheight*3 && bouldersSpan > 6) {
+	if (scroll  > -yheight*3 && bouldersSpan > 1.6) {
 		scroll -=100;
 		pos[1] = scroll;
 	}
@@ -465,39 +465,39 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 		optionsSpan += timeDiff(&optionsStart, &optionsCurrent);
 		arrowSpan += timeDiff(&arrowStart, &arrowCurrent);
 
-		if (posLogo[1] < 6000 && logoSpan > .8) {
-				posLogo[1] += 25;
+		if (posLogo[1] < 6000 && logoSpan > .01) {
+				posLogo[1] += 5;
 		}
 
-		if (fabs(posEnter[0]) < xwidth && enterSpan > 1) {
-			posEnter[0] += 25;
+		if (fabs(posEnter[0]) < xwidth && enterSpan > .00005) {
+			posEnter[0] += 5;
 		}
 
-		if (posOptions[0] < xwidth && optionsSpan > 1) {
-			posOptions[0] += 25;
+		if (posOptions[0] < xwidth && optionsSpan > .00005) {
+			posOptions[0] += 5;
 		}
 
-		if (arrow[0] < xwidth && arrowSpan > 1) {
-			arrow[0] += 25;
+		if (arrow[0] < xwidth && arrowSpan > .00005) {
+			arrow[0] += 5;
 		}
 
 		if (!arrow[1]) {
-			if (posLogo[1] > 800) {
-				scale[0] += .00375; scalePos[0] -= .00375;
-				scale[1] += .00375; scalePos[1] -= .00375;
+			if (posLogo[1] > 320) {
+				scale[0] += .05; scalePos[0] -= .05;
+				scale[1] += .05; scalePos[1] -= .05;
 				//cout << scale[1] << endl;
 			}
 			
-			if (posLogo[1] == 1800) {
+			if (posLogo[1] == 700) {
 				return 0;
 			}
 		}
 
-		else if (arrow[1]) {
+		else if (arrow[1] && posLogo[1] > 320) {
 			optionsFlag = 1;
 			//enterPressed = 0;
 			if (sign[1] > -yheight-250) {
-				sign[1]--;
+				sign[1]-=10;
 				//cout << sign[1] << endl;
 			}
 		}
@@ -511,6 +511,12 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 			r.left = 310;
 			r.center = 0;
 			ggprint16(&r, 0, 0xffffff, "Back");
+
+			Rect r2;
+			r2.bot = yheight - 320;
+			r2.left = 310;
+			r2.center = 0;
+			ggprint16(&r2, 0, 0xffffff, "Character");
 
 			//arrow 2
 			w = introImages[7]->width/3;
