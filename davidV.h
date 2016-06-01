@@ -5,6 +5,10 @@
 #include "game.h"
 #include "jobG.h"
 #include <cstring>
+#include <ctime>
+#include <vector>
+#include <stdlib.h>
+#include <cmath>
 
 template <typename OType>
 void drawOType(OType otype, Game *g);
@@ -38,11 +42,29 @@ float getDistanceStatsVal(Game *, Stats, int);
 float getDistanceStats(Game *, Stats);
 float getXYDistValue(float, float);
 
+void init_textures(Game &);
+
 char* getBlockTexture(gblock block);
 void renderBlockTexture(gblock block);
 //
 //
 void init_blocks(Game *, gblock_info);
+
+/* block.h */
+
+/*
+ * Author: David Vaughan
+ * Purpose: 2D Array generator
+ * Code: This is the header file for the "BlockConstructor" code.
+ * See block.cpp for more information
+ */
+// Macros and templates //
+//
+//
+
+
+/* end block.h */
+
 //***************************************
 //***************************************
 //

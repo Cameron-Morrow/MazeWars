@@ -114,10 +114,10 @@ int main(int argc, char *argv[])
 	load_sounds();
 	Game game;
 	gblock_info gbi;
-	gbi.width = 16;
-	gbi.height = 16;
-	gbi.rows = 50;
-	gbi.columns = 50;
+	gbi.width = 64;
+	gbi.height = 64;
+	gbi.rows = 100;
+	gbi.columns = 100;
 	begin_game(game, gbi);
 	Joystick joystick;
 	init(&game);
@@ -314,7 +314,7 @@ void init_opengl(void)
 	introImages[6] = ppm6GetImage((char*)"images/sign.ppm");
 	introImages[7] = ppm6GetImage((char*)"images/Arrow.ppm");
 	
-	mazeImage = ppm6GetImage((char*)"images/maze1.ppm");
+	//mazeImage = ppm6GetImage((char*)"images/maze1.ppm");
 
 	glGenTextures(1, &testTexture);
 	glGenTextures(1, &personTexture1);
@@ -467,7 +467,7 @@ void init_opengl(void)
 	free(arrow2Data);
 
 	//maze texture
-	w = mazeImage->width;
+	/*w = mazeImage->width;
 	h = mazeImage->height;
 	glBindTexture(GL_TEXTURE_2D, mazeTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -475,7 +475,7 @@ void init_opengl(void)
 	unsigned char *mazeData = buildAlphaData(mazeImage);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, mazeData);
-	free(mazeData);	
+	free(mazeData);	*/
 
 
 	loadEndCreditsTextures();
@@ -785,7 +785,7 @@ void render(Game *g)
 	//	drawOType(g->Player_1, g);
 
 	play_sounds(6);
-	render_maze(g, mazeTexture, mazeImage);
+	//render_maze(g, mazeTexture, mazeImage);
 
 		
 	if (axis[3] || axis[4])
