@@ -30,7 +30,7 @@ const float timeslice = 1.0f;
 const float gravity = -0.2f;
 #define PI 3.141592653589793
 #define ALPHA 1
-
+static float VOLUME = 0.0f;
 //X Windows variables
 Display *dpy;
 Window win;
@@ -648,6 +648,16 @@ void physics(Game *g)
 		person.pos[0] =	g->Player_1.stats.spos[0];
 		person.pos[1] = g->Player_1.stats.spos[1];
 	}
+	if (keys[XK_l]) {
+		VOLUME += 0.01f;
+		if (VOLUME >= 1.0f)
+			VOLUME = 1.0f;
+	}
+	if (keys[XK_k]) {
+		VOLUME -= 0.01f;
+		if (VOLUME <= 0.0f)
+			VOLUME = 0.0f;
+	}
 	if (keys[XK_d] && !g->Player_1.gameOver && !Pause && !winCondition) {
 		g->Player_1.stats.angle -= 4.0f;
 		if (g->Player_1.stats.angle < 0.0f)
@@ -854,5 +864,5 @@ void render(Game *g)
 	if (keys[XK_r]) {
                  pressR(g);
          }
-
+	getVolume(VOLUME);
 }
