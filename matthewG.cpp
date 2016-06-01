@@ -173,12 +173,12 @@ void renderCharacter(Person person, Game *g, float w, int keys[],
 	glAlphaFunc(GL_GREATER, 0.0f);
 
 	glBegin(GL_QUADS);	
-	if (animationSpan >= 90) {
+	if (animationSpan >= 40) {
 		animationSpan = 0.0;
 		clock_gettime(CLOCK_REALTIME, &animationStart);
 	}
 
-	if ((keys[XK_w] || keys[XK_s]) && animationSpan < 22) {
+	if ((keys[XK_w] || keys[XK_s]) && animationSpan < 10) {
 		glTexCoord2f(0.5f, 0.0f); glVertex2f(-w, w);
 		glTexCoord2f(1.0f, 0.0f); glVertex2f(w, w);
 		glTexCoord2f(1.0f, 1.0f); glVertex2f(w, -w);
