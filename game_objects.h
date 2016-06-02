@@ -166,6 +166,7 @@ struct Game {
 	GLuint enemyTextures;
 	gblock **blocks;
 	gblock_info game_info;
+	GLuint foaTexture;
 	struct timespec bulletTimer;
 	Game() {
 		blocks = NULL;
