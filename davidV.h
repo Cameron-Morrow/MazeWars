@@ -46,6 +46,8 @@ float getDistanceStats(Game *, Stats);
 float getXYDistValue(float, float);
 
 void init_textures(Game &);
+void buildFogOfWar(Game &);
+void renderFoa(Game *);
 
 char* getBlockTexture(gblock block);
 void renderBlockTexture(gblock block);
