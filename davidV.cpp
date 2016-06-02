@@ -207,14 +207,14 @@ void getBlockTexCoords(int, float &, float &, float &, float &);
 
 void getBlockTexCoords(int type, float &x1, float &x2, float &y1, float &y2) {
 	if (type < 16) {
-		x1 = (32 + type*32) / 512;
-		x2 = x1 - 32/512;
-		y1 = 1/4;
+		x1 = (float) ((32 + type*32) / 512);
+		x2 = x1 - (float) 32/512;
+		y1 = (float)(1/4);
 		y2 = 0;
 	} else {
-		x1 = 32/512;
+		x1 = (float)(32/512);
 		x2 = 0;
-		y1 = 1/4;
+		y1 = (float)(1/4);
 		y2 = 0;
 	}
 	/*switch(type) {
@@ -732,14 +732,14 @@ void drawBlock(Game *g, gblock block)
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glBindTexture(GL_TEXTURE_2D, g->blockTexture);
 	glBegin(GL_QUADS);
-		/*glTexCoord2f(cx2, cy1); glVertex2f(-size, -size);
+		glTexCoord2f(cx2, cy1); glVertex2f(-size, -size);
 		glTexCoord2f(cx2, cy2); glVertex2f(-size, size);
 		glTexCoord2f(cx1, cy2); glVertex2f(size, size);
-		glTexCoord2f(cx1, cy1); glVertex2f(size, -size);*/
-		glTexCoord2f(cx2, cy2); glVertex2f(-size, -size);
+		glTexCoord2f(cx1, cy1); glVertex2f(size, -size);
+		/*glTexCoord2f(cx2, cy2); glVertex2f(-size, -size);
 		glTexCoord2d(cx1, cy2); glVertex2f(-size, size);
 		glTexCoord2d(cx1, cy1); glVertex2f(size, size);
-		glTexCoord2f(cx2, cy1); glVertex2f(size, -size);
+		glTexCoord2f(cx2, cy1); glVertex2f(size, -size);*/
 	glEnd();
 	glDisable(GL_ALPHA_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
