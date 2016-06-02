@@ -1,0 +1,6 @@
+MazeWars
+*.o
+*.so
+*.a
+fonts/*.o
+x.x

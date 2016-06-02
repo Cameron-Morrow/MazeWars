@@ -589,11 +589,14 @@ void monsterGetShot(Game *g, int monNum, int startx, int starty)
 		((g->barr[i].stats.spos[1] >= g->mon[monNum].stats.spos[1]-12) &&\
 		(g->barr[i].stats.spos[1] <= g->mon[monNum].stats.spos[1]+12))) {
 			g->mon[monNum].health -= 20;
+			g->Player_1.score+=50;
 		} 
 	}
 	if (g->mon[monNum].health <= 0) {
 		g->mon[monNum].health = 0;
 		g->mon[monNum].alive = false;
+		g->Player_1.kills++;
+		g->Player_1.score+=500;
 	}
 	startx++;
 	starty++;
@@ -980,7 +983,7 @@ void loadEndCreditsTextures()
 	CreditsImages[4] = ppm6GetImage((char*)"parallax/grass.ppm");
 	CreditsImages[5] = ppm6GetImage((char*)"parallax/trees2.ppm");
 	CreditsImages[11] = ppm6GetImage((char*)"parallax/Dude.ppm");
-	
+	CreditsImages[12] = ppm6GetImage((char*)"images/THE_END.ppm");
 	CreditsImages[6] = ppm6GetImage((char*)"images/CAM.ppm");
 	CreditsImages[7] = ppm6GetImage((char*)"images/DAVID.ppm");	
 	CreditsImages[8] = ppm6GetImage((char*)"images/JOB.ppm");
@@ -995,7 +998,7 @@ void loadEndCreditsTextures()
 	glGenTextures(1, &CreditsTextures[4]); //GrassTexture
 	glGenTextures(1, &CreditsTextures[5]); //Trees2Texture
 	glGenTextures(1, &CreditsTextures[11]); //DudeTexture
-	
+	glGenTextures(1, &CreditsTextures[12]); //THE_ENDTexture
 	glGenTextures(1, &CreditsTextures[6]); //CAM
 	glGenTextures(1, &CreditsTextures[7]); //DAVE
 	glGenTextures(1, &CreditsTextures[8]); //ME
@@ -1134,6 +1137,17 @@ void loadEndCreditsTextures()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, dudeData);
 	free(dudeData);	
+	
+	//Dude Texture
+	w = CreditsImages[12]->width;
+	h = CreditsImages[12]->height;
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[12]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char *ENDData = buildAlphaData(CreditsImages[12]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, ENDData);
+	free(ENDData);
 }
 
 struct timespec CreditsTime;
@@ -1142,16 +1156,16 @@ static double CreditsSpan = 0.0;
 
 void endCredits(Game *g, int keys[])
 {
-	static bool creditsMusic = false;
-	if (!creditsMusic) {
+	static int creditsMusic = 1;
+	if (creditsMusic) {
 		play_sounds(19, 1);
-		creditsMusic = true;
+		creditsMusic--;
 	}
 	Rect u;
-	u.bot = -res[1]/2;
-	u.left = -res[0]/2;
+	u.bot = res[1]/2;
+	u.left = res[0]/2;
 	u.center = 0;
-	ggprint8b(&u, 48, 0x00FFFFFF, "");
+	ggprint8b(&u, 48, 0x00FFFFFF, "Your Score: %d", g->Player_1.score);
 	static float jmpspd = 0;
 	static int jmp = 0;
 	static float mov = 0, mov2 = 0;
@@ -1513,6 +1527,60 @@ void endCredits(Game *g, int keys[])
 	glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
 	glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
 
+	glEnd();
+	glPopMatrix();
+	
+	static int mvScore = -res[1] + 100;
+	if (ending)
+		mvScore++;
+
+	u.bot = res[1]/2 + mvScore - 10;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Your Score: %d", g->Player_1.score);
+	
+	u.bot = res[1]/2 + mvScore - 210;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Monsters Killed: %d", g->Player_1.kills);
+	
+	u.bot = res[1]/2 + mvScore - 410;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Remaining Lives: %d", g->Player_1.lives);
+
+	u.bot = res[1]/2 + mvScore - 610;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1: %d", g->Player_1.artifact[0]);
+	
+	u.bot = res[1]/2 + mvScore - 810;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1: %d", g->Player_1.artifact[1]);
+	
+	u.bot = res[1]/2 + mvScore - 1010;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1: %d", g->Player_1.artifact[2]);
+		/////////////////////////////////////////////////////////////////////
+	//THE END
+	w = CreditsImages[10]->width;
+	h = CreditsImages[10]->height;
+	
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[12]);
+	glTranslatef(3*4360+mov*10, 150, 0);
+	glScalef(1, 1, 1);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glBegin(GL_QUADS);
+	
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(0 , h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
+	glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
+	
 	glEnd();
 	glPopMatrix();
 }

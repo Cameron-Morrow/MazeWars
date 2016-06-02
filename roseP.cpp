@@ -3,8 +3,11 @@
 
 // Name: Rose Phannavong
 // Written: 27 April 2016
-// Modified: 30 May 2016
+// Modified: 1 June 2016
 // Description: The code will be implementing sound/music for the game.
+//              Press key R will display bubbles around the player.
+//              Rendering a maze that is 24 by 24, and doing maze
+//              collision for it. Convert PPMs and PNGs. 
 
 #include <iostream>
 #include <stdio.h>
@@ -16,6 +19,8 @@
 #include </usr/include/AL/alut.h>
 #include <cmath>
 #include "game_objects.h"
+#include "roseP.h"
+
 ALuint alSource[20];
 ALuint alBuffer[20];
 
@@ -24,6 +29,7 @@ void getVolume(float V)
 {
 		Volume = V;
 }
+
 void init_sounds()
 {
     //Check and clear.
@@ -102,7 +108,7 @@ void load_sounds()
     alGenSources(1, &alSource[6]);
     alSourcei(alSource[6], AL_BUFFER, alBuffer[6]);
     
-    //Cameron's Piano
+    //Cameron's Piano.
     alBuffer[11] = alutCreateBufferFromFile("./sound/c.wav");
     alGenSources(1, &alSource[11]);
     alSourcei(alSource[11], AL_BUFFER, alBuffer[11]);
@@ -145,6 +151,7 @@ void play_sounds(int soundOption)
     }
     alSourcePlay(alSource[soundOption]);
 }
+
 void play_sounds(int soundOption, int loop)
 {
     //Set volume and pitch.
@@ -158,8 +165,10 @@ void play_sounds(int soundOption, int loop)
     }
     alSourcePlay(alSource[soundOption]);
 }
+
 void bubblez(int radius, int x, int y, float red, float green, float blue)
 {
+    //Get bubbles to appear.
     static int num = 0;
     std::cout << "circle num: " << num++ << std::endl;
     glColor3f(red, green, blue);
@@ -189,9 +198,10 @@ void bubblez(int radius, int x, int y, float red, float green, float blue)
             y -= rand() % 150;
             break;
     }
-    for (float i = 0.0; i < 360.0; i+=1.0) {
+    for (float i = 0.0; i < 360.0; i += 1.0) {
          glVertex2f(radius * cos(i) + x, radius * sin(i) + y);
-    } 
+    }
+ 
     glEnd();
     //glDisable(GL_BLEND);
     glDisable(GL_POINT_SMOOTH);
@@ -199,7 +209,7 @@ void bubblez(int radius, int x, int y, float red, float green, float blue)
 
 void pressR(Game *g)
 {
-    //Special keystroke for bubbles.
+    //Special keystroke for bubblez.
     std::cout << "R pressed" << std::endl;
     srand(NULL);
     int x = g->Player_1.stats.spos[0];
@@ -215,7 +225,9 @@ void pressR(Game *g)
     }
 }
 
-void render_maze(Game *g, GLuint mazeTexture, Ppmimage *mazeImage) {
+void render_maze(Game *g, GLuint mazeTexture, Ppmimage *mazeImage) 
+{
+    //Rendering maze[24][24].
     int w = mazeImage->width*4;
     int h = mazeImage->height*4;
 
@@ -242,7 +254,8 @@ void render_maze(Game *g, GLuint mazeTexture, Ppmimage *mazeImage) {
     glPopMatrix();
 }
 
-int maze[24][24] = {{1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1},
+int maze[24][24] = {
+                {1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1},
                 {1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1},
                 {1,0,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1},
                 {1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1},
@@ -267,7 +280,10 @@ int maze[24][24] = {{1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1},
                 {1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1},
                 {1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1}};
 
-int maze_collision(Game *g) {
+void maze_collision(Game *g)
+{
+    //Maze collision for the maze[24][24].
+
     //for (int row = 0; row < 24; row++) {
     //    for (int col = 0; col < 24; col++) {
     //        if (maze[row][col] == 1) {
@@ -288,6 +304,24 @@ int maze_collision(Game *g) {
         //std::cout << "y: " << y << std::endl;        
     }
 
+}
+
+//Convert the PPMs and PNGs.
+void convertPNGtoPPM() {
+    std::cout << "converting" << std::endl;
+    system("mogrify -format ppm images/*.png");
+    system("mogrify -format ppm parallax/*.png");
+}
+
+void convertPPMtoPNG() {
+    system("mogrify -format png images/*.png");
+    system("mogrify -format png parallax/*.ppm");
+    removePPMImages();
+}
+
+void removePPMImages() {
+    system("rm images/*.ppm");
+    system("rm parallax/*.ppm");
 }
 
 #endif

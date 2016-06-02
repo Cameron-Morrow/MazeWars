@@ -13,5 +13,8 @@ void pressR(Game *g);
 void render_maze(Game *g, GLuint mazeTexture, Ppmimage *mazeImage);
 void maze_collision(Game *g);
 void getVolume(float V);
+void convertPNGtoPPM();
+void convertPPMtoPNG();
+void removePPMImages();
 
 #endif
