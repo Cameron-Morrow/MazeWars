@@ -564,8 +564,8 @@ void create_gblock(gblock& block, int type, int row, int col)
 	block.type = type;
 	block.assigned = 1;
 	//block.stats.obj_texture = renderBlockTexture(block);
-	set_gblock_gpos(block.stats.gpos[0], row, block.stats.width*2);
-	set_gblock_gpos(block.stats.gpos[1], col, block.stats.width*2);
+	set_gblock_gpos(block.stats.gpos[1], row, block.stats.width*2);
+	set_gblock_gpos(block.stats.gpos[0], col, block.stats.width*2);
 	//printf("Block[%d][%d] located at x(%f) y(%f)\n", row, col, 
 	//	block.stats.gpos[0], block.stats.gpos[1]);
 }
