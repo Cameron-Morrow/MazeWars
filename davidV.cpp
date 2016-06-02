@@ -215,8 +215,8 @@ void getBlockTexCoords(int type, float &x1, float &x2, float &y1, float &y2) {
 	} else {
 		x1 = (float) 32/512;
 		x2 = 0;
-		y1 = (float) 1/4;
-		y2 = 0;
+		y1 = (float) 2/4;
+		y2 = (float) 1/4;
 	}
 	/*switch(type) {
 		case 0:
