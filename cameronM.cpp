@@ -589,11 +589,14 @@ void monsterGetShot(Game *g, int monNum, int startx, int starty)
 		((g->barr[i].stats.spos[1] >= g->mon[monNum].stats.spos[1]-12) &&\
 		(g->barr[i].stats.spos[1] <= g->mon[monNum].stats.spos[1]+12))) {
 			g->mon[monNum].health -= 20;
+			g->Player_1.score+=50;
 		} 
 	}
 	if (g->mon[monNum].health <= 0) {
 		g->mon[monNum].health = 0;
 		g->mon[monNum].alive = false;
+		g->Player_1.kills++;
+		g->Player_1.score+=500;
 	}
 	startx++;
 	starty++;
@@ -1159,10 +1162,10 @@ void endCredits(Game *g, int keys[])
 		creditsMusic--;
 	}
 	Rect u;
-	u.bot = -res[1]/2;
-	u.left = -res[0]/2;
+	u.bot = res[1]/2;
+	u.left = res[0]/2;
 	u.center = 0;
-	ggprint8b(&u, 48, 0x00FFFFFF, "");
+	ggprint8b(&u, 48, 0x00FFFFFF, "Your Score: %d", g->Player_1.score);
 	static float jmpspd = 0;
 	static int jmp = 0;
 	static float mov = 0, mov2 = 0;
@@ -1527,8 +1530,41 @@ void endCredits(Game *g, int keys[])
 	glEnd();
 	glPopMatrix();
 	
+	static int mvScore = -res[1] + 100;
+	if (ending)
+		mvScore++;
+
+	u.bot = res[1]/2 + mvScore - 10;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Your Score: %d", g->Player_1.score);
+	
+	u.bot = res[1]/2 + mvScore - 210;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Monsters Killed: %d", g->Player_1.kills);
+	
+	u.bot = res[1]/2 + mvScore - 410;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Remaining Lives: %d", g->Player_1.lives);
+
+	u.bot = res[1]/2 + mvScore - 610;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1: %d", g->Player_1.artifact[0]);
+	
+	u.bot = res[1]/2 + mvScore - 810;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1: %d", g->Player_1.artifact[1]);
+	
+	u.bot = res[1]/2 + mvScore - 1010;
+	u.left = res[0]/2 - 200;
+	u.center = 0;
+	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1: %d", g->Player_1.artifact[2]);
 		/////////////////////////////////////////////////////////////////////
-	//flower
+	//THE END
 	w = CreditsImages[10]->width;
 	h = CreditsImages[10]->height;
 	
@@ -1544,7 +1580,7 @@ void endCredits(Game *g, int keys[])
 	glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
 	glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
 	glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
-
+	
 	glEnd();
 	glPopMatrix();
 }
