@@ -207,14 +207,14 @@ void getBlockTexCoords(int, float &, float &, float &, float &);
 
 void getBlockTexCoords(int type, float &x1, float &x2, float &y1, float &y2) {
 	if (type < 16) {
-		x1 = (float) ((32 + type*32) / 512);
+		x1 = (float) (32 + type*32) / 512;
 		x2 = x1 - (float) 32/512;
-		y1 = (float)(1/4);
+		y1 = (float) 1/4;
 		y2 = 0;
 	} else {
-		x1 = (float)(32/512);
+		x1 = (float) 32/512;
 		x2 = 0;
-		y1 = (float)(1/4);
+		y1 = (float) 1/4;
 		y2 = 0;
 	}
 	/*switch(type) {
@@ -1693,42 +1693,42 @@ int parseToBlockTextures(vector<vector<Block> > &dungeon,
 		if (row == 0) {
 			if (col == 0) {
 				if (dungeon[row+1][col].maintype == 0) type += 4;
-				if (dungeon[row][col+1].maintype == 0) type += 8;
+				if (dungeon[row][col+1].maintype == 0) type += 2;
 			} else if (col < specs.cols - 1) {
-				if (dungeon[row][col-1].maintype == 0) type += 2;
+				if (dungeon[row][col-1].maintype == 0) type += 8;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
-				if (dungeon[row][col+1].maintype == 0) type += 8;
+				if (dungeon[row][col+1].maintype == 0) type += 2;
 			} else {
-				if (dungeon[row][col-1].maintype == 0) type += 2;
+				if (dungeon[row][col-1].maintype == 0) type += 8;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
 			}
 			return type;
 		} else if (row < specs.rows - 1) {
 			if (col == 0) {
 				if (dungeon[row-1][col].maintype == 0) type += 1;
-				if (dungeon[row][col+1].maintype == 0) type += 8;
+				if (dungeon[row][col+1].maintype == 0) type += 2;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
 			} else if (col < specs.cols - 1) {
 				if (dungeon[row-1][col].maintype == 0) type += 1;
-				if (dungeon[row][col+1].maintype == 0) type += 8;
+				if (dungeon[row][col+1].maintype == 0) type += 2;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
-				if (dungeon[row][col-1].maintype == 0) type += 2;
+				if (dungeon[row][col-1].maintype == 0) type += 8;
 			} else {
 				if (dungeon[row-1][col].maintype == 0) type += 1;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
-				if (dungeon[row][col-1].maintype == 0) type += 2;
+				if (dungeon[row][col-1].maintype == 0) type += 8;
 			}
 			return type;
 		} else {
 			if (col == 0) {
 				if (dungeon[row-1][col].maintype == 0) type += 1;
-				if (dungeon[row][col+1].maintype == 0) type += 8;
+				if (dungeon[row][col+1].maintype == 0) type += 2;
 			} else if (col < specs.cols - 1) {
-				if (dungeon[row][col-1].maintype == 0) type += 2;
+				if (dungeon[row][col-1].maintype == 0) type += 8;
 				if (dungeon[row-1][col].maintype == 0) type +=1;
-				if (dungeon[row][col+1].maintype == 0) type += 8;
+				if (dungeon[row][col+1].maintype == 0) type += 2;
 			} else {
-				if (dungeon[row][col-1].maintype == 0) type += 2;
+				if (dungeon[row][col-1].maintype == 0) type += 8;
 				if (dungeon[row-1][col].maintype == 0) type += 1;
 			}
 			return type;
