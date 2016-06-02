@@ -610,7 +610,7 @@ int check_keys(XEvent *e)
 
 void physics(Game *g)
 {
-	check_gblock_collision(g->Player_1, g, 0.1, 0.1);
+	//check_gblock_collision(g->Player_1, g, 0.1, 0.1);
 
 	struct timespec bt;
 	clock_gettime(CLOCK_REALTIME, &bt);
