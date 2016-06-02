@@ -30,7 +30,7 @@ const float timeslice = 1.0f;
 const float gravity = -0.2f;
 #define PI 3.141592653589793
 #define ALPHA 1
-static float VOLUME = 0.0f;
+static float VOLUME = 1.0f;
 //X Windows variables
 Display *dpy;
 Window win;
