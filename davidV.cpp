@@ -1440,6 +1440,8 @@ void initStartBlocks(DRules rules, DInit init, DSpecs specs,
  		newdungeon = newParsedMap(specs, tolerance, dungeon);
  		dungeon = newdungeon;
  	}
+ 	newdungeon = newTexturedMap(specs, dungeon);
+ 	dungeon = newdungeon;
  }
 
  void buildPath(DRules rules, DSpecs specs,
@@ -1669,6 +1671,20 @@ vector<vector<Block> > newParsedMap(DSpecs specs, int tolerance,
 			}	
 		}
 	}
+	/*for (int i = 0; i < specs.rows - 1; i++) {
+		for (int j = 0; j < specs.cols - 1; j++) {
+			int textype = parseToBlockTextures(dungeon, i, j, specs);
+			newdungeon[i][j].subtype = textype;
+		}
+	}*/
+	return newdungeon;
+}
+
+vector<vector<Block> > newTexturedMap(DSpecs, vector<vector<Block> > &dungeon)
+{
+	Block block;
+	vector<Block> dungeonCols(specs.cols, block);
+	vector<vector<Block> > newdungeon(specs.rows, dungeonCols);
 	for (int i = 0; i < specs.rows - 1; i++) {
 		for (int j = 0; j < specs.cols - 1; j++) {
 			int textype = parseToBlockTextures(dungeon, i, j, specs);
