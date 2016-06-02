@@ -3,11 +3,11 @@
 
 // Name: Rose Phannavong
 // Written: 27 April 2016
-// Modified: 30 May 2016
+// Modified: 1 June 2016
 // Description: The code will be implementing sound/music for the game.
 //              Press key R will display bubbles around the player.
 //              Rendering a maze that is 24 by 24, and doing maze
-//              collision. Convert PPMs and PNGs. 
+//              collision for it. Convert PPMs and PNGs. 
 
 #include <iostream>
 #include <stdio.h>
