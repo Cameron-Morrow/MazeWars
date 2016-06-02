@@ -1477,7 +1477,7 @@ void initStartBlocks(DRules rules, DInit init, DSpecs specs,
  	vector<Block> dungeonCols(specs.cols, block);
  	vector<vector<Block> > newdungeon(specs.rows, dungeonCols);
 
- 	for (int i = 0; i < 100; i++) {
+ 	for (int i = 0; i < 1; i++) {
  		newdungeon = newParsedMap(specs, tolerance, dungeon);
  		dungeon = newdungeon;
  	}
@@ -1730,6 +1730,7 @@ vector<vector<Block> > newTexturedMap(DSpecs specs, vector<vector<Block> > &dung
 		for (int j = 0; j < specs.cols - 1; j++) {
 			int textype = parseToBlockTextures(dungeon, i, j, specs);
 			newdungeon[i][j].subtype = textype;
+			newdungeon[i][j].maintype = dungeon[i][j].maintype;
 		}
 	}
 	return newdungeon;
