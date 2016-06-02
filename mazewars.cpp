@@ -859,7 +859,7 @@ void render(Game *g)
 			monster(g, i, 1,2);
 		}
 	}
-	shadowBox();
+	//shadowBox();
 	drawHUD(&g->Player_1);
 
 	graveKeyPress(keys);
