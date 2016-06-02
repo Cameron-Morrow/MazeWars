@@ -154,7 +154,6 @@ public:
 using namespace std;
 
 void generator(vector<vector<Block> >&, DSpecs, DInit, DRules);
-
 void generateRules(DRules& rules, DSpecs& specs, DInit& init);
 void srandByTime(struct timespec& rtime);
 void initGamePositions(DInit& init, DSpecs& specs, struct timespec rtime);
@@ -1804,6 +1803,46 @@ int parseToBlockTextures(vector<vector<Block> > &dungeon,
 	return type;
 }
 
+void buildFogOfWar(Game &game)
+{
+	Ppmimage *fogofwar;
+    	fogofwar = ppm6GetImage((char*)"images/foa.ppm");
+	glGenTextures(1, &game.foaTexture);
+	
+	//person
+	int w = fogofwar->width;
+	int h = fogofwar->height;
+	unsigned char *foaData = buildAlphaData(fogofwar);	
+	glBindTexture(GL_TEXTURE_2D, game.foaTexture);
+		glTexParameteri(GL_TEXTURE_2D,
+			GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,
+			GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, 
+			GL_UNSIGNED_BYTE, foaData);
+	free(foaData);
+	
+}
+
+void renderFoa(Game *g)
+{
+	for (int i = 0; i < 100; i++) {
+		glColor4f(1.0f, 1.0f, 1.0f, 0.0f + (i*0.01f));
+		glPushMatrix();
+		glTranslatef(0,0,0);
+		glBindTexture(GL_TEXTURE_2D, g->foaTexture);
+		//glEnable(GL_ALPHA_TEST);
+		//glAlphaFunc(GL_GREATER, 0.0f);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0.0f); glVertex2f(1250, 900);
+			glTexCoord2f(0.0f, 1.0f); glVertex2f(1250, 900);
+			glTexCoord2f(1.0f, 1.0f); glVertex2f(1250, 900);
+			glTexCoord2f(1.0f, 0.0f); glVertex2f(1250, 900);
+		glEnd();
+		//glDisable(GL_ALPHA_TEST);
+		glPopMatrix();
+	}
+}
 //
 //
 //
