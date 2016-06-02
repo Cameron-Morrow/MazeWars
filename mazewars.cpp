@@ -484,7 +484,7 @@ void init_opengl(void)
 	free(mazeData);	*/
 
 
-	//loadEndCreditsTextures();
+	loadEndCreditsTextures();
 	loadLivesSprite();
 }
 
