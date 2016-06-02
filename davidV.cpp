@@ -202,6 +202,7 @@ int parseToBlockTextures(vector<vector<Block> > &, int, int, DSpecs);
 
 
 void getBlockTexCoords(int, float &, float &, float &, float &);
+vector<vector<Block> > newTexturedMap(DSpecs, vector<vector<Block> > &);
 /////
 
 
@@ -1680,7 +1681,7 @@ vector<vector<Block> > newParsedMap(DSpecs specs, int tolerance,
 	return newdungeon;
 }
 
-vector<vector<Block> > newTexturedMap(DSpecs, vector<vector<Block> > &dungeon)
+vector<vector<Block> > newTexturedMap(DSpecs specs, vector<vector<Block> > &dungeon)
 {
 	Block block;
 	vector<Block> dungeonCols(specs.cols, block);
