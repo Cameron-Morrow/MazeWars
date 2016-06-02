@@ -194,6 +194,9 @@ void setDisabledTurn(DFork &, Block, int);
 bool checkAttemptedTurn(DFork, int);
 void connectForks(DFork &, DFork &);
 
+void renderCharacter(Player player, Game *g, float w, int keys[], 
+	GLuint personTexture1);
+
 int parseSurroundingBlocks(DSpecs specs, vector<vector<Block> > &dungeon,
 		Block block);
 vector<vector<Block> > newParsedMap(DSpecs specs, int,
@@ -570,6 +573,45 @@ void create_gblock(gblock& block, int type, int row, int col)
 	//	block.stats.gpos[0], block.stats.gpos[1]);
 }
 
+void renderCharacter(Player player, Game *g, float w, int keys[], 
+	GLuint personTexture1)
+{
+	glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+	glPushMatrix();
+	glTranslatef(player.spos[0], player.spos[1], player.spos[2]);	
+	glRotatef(g->Player_1.stats.angle, 0, 0, 1.0f);
+	glBindTexture(GL_TEXTURE_2D, personTexture1);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+
+	glBegin(GL_QUADS);	
+	if (animationSpan >= 40) {
+		animationSpan = 0.0;
+		clock_gettime(CLOCK_REALTIME, &animationStart);
+	}
+
+	if ((keys[XK_w] || keys[XK_s]) && animationSpan < 10) {
+		glTexCoord2f(0.5f, 0.0f); glVertex2f(-w, w);
+		glTexCoord2f(1.0f, 0.0f); glVertex2f(w, w);
+		glTexCoord2f(1.0f, 1.0f); glVertex2f(w, -w);
+		glTexCoord2f(0.5f, 1.0f); glVertex2f(-w, -w);
+	}
+	else
+	{
+		glTexCoord2f(0.0f, 0.0f); glVertex2f(-w, w);
+		glTexCoord2f(0.5f, 0.0f); glVertex2f( w, w);
+		glTexCoord2f(0.5f, 1.0f); glVertex2f( w, -w);
+		glTexCoord2f(0.0f, 1.0f); glVertex2f(-w,-w);
+	}
+	
+	clock_gettime(CLOCK_REALTIME, &animationCurrent);
+	animationSpan += timeDiff(&animationStart, &animationCurrent);
+	
+	glEnd();
+	glDisable(GL_ALPHA_TEST);
+	glPopMatrix();
+}
+
 void begin_game(Game& game, gblock_info& gbi)
 {
 	game.game_info.rows = gbi.rows;
@@ -603,8 +645,8 @@ void begin_game(Game& game, gblock_info& gbi)
 			create_gblock(game.blocks[i][j], dungeon[i][j].subtype, i, j);
 		}
 	}
-	game.Player_1.stats.gpos[0] = init.startrow*gbi.width;
-	game.Player_1.stats.gpos[1] = init.startcol*gbi.width;
+	game.Player_1.stats.gpos[1] = init.startrow*gbi.width;
+	game.Player_1.stats.gpos[0] = init.startcol*gbi.width;
 }
 
 //

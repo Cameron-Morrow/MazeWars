@@ -836,7 +836,8 @@ void render(Game *g)
 	renderEnemy(g->mon[6], g);
 
 	if (g->Player_1.gameOver == false)
-		renderCharacter(person, g, w, keys, personTexture1); 
+		//renderCharacter(person, g, w, keys, personTexture1); 
+		renderCharacter(g->Player_1, g, w, keys, personTexture1);
 
 	for (int i=0; i<g->nbullets; i++) {
 		Bullet *b = &g->barr[i];
