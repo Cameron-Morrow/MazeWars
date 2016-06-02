@@ -738,9 +738,9 @@ void drawBlock(Game *g, gblock block)
 		glTexCoord2f(cx1, cy2); glVertex2f(size, size);
 		glTexCoord2f(cx1, cy1); glVertex2f(size, -size);*/
 		glTexCoord2f(cx2, cy2); glVertex2f(-size, -size);
-		glTexCoord2d(cx1, cy2); glVertex2f(-size, size);
+		glTexCoord2d(cx2, cy1); glVertex2f(-size, size);
 		glTexCoord2d(cx1, cy1); glVertex2f(size, size);
-		glTexCoord2f(cx2, cy1); glVertex2f(size, -size);
+		glTexCoord2f(cx1, cy2); glVertex2f(size, -size);
 	glEnd();
 	glDisable(GL_ALPHA_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
