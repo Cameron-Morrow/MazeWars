@@ -206,7 +206,18 @@ void getBlockTexCoords(int, float &, float &, float &, float &);
 
 
 void getBlockTexCoords(int type, float &x1, float &x2, float &y1, float &y2) {
-	switch(type) {
+	if (type < 16) {
+		x1 = (32 + type*32) / 512;
+		x2 = x1 - 32/512;
+		y1 = 1/4;
+		y2 = 0;
+	} else {
+		x1 = 32/512;
+		x2 = 0;
+		y1 = 1/4;
+		y2 = 0;
+	}
+	/*switch(type) {
 		case 0:
 			x1 = (float) 8.5/13;
 			x2 = x1 - (float) 1/13;
@@ -309,13 +320,14 @@ void getBlockTexCoords(int type, float &x1, float &x2, float &y1, float &y2) {
 			y1 = (float) 2/4;
 			y2 = y1 - (float) 1/4;
 			break;
-	}
+			
+	}*/
 }
 
 
 void init_textures(Game &game) {
 	Ppmimage *blockSpriteSheet;
-       	blockSpriteSheet = ppm6GetImage((char*)"images/wallTexture64.ppm");
+       	blockSpriteSheet = ppm6GetImage((char*)"images/newtiles.ppm");
 	//create opengl texture elements for the blockspritesheet
     Ppmimage *enemySpriteSheet;
     	enemySpriteSheet = ppm6GetImage((char*)"images/enemysheet.ppm");
