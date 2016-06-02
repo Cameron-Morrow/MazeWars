@@ -578,19 +578,20 @@ void renderCharacter(Player player, Game *g, float w, int keys[],
 {
 	glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
 	glPushMatrix();
-	glTranslatef(player.spos[0], player.spos[1], player.spos[2]);	
+	glTranslatef(player.stats.spos[0], player.stats.spos[1],
+				player.stats.spos[2]);	
 	glRotatef(g->Player_1.stats.angle, 0, 0, 1.0f);
 	glBindTexture(GL_TEXTURE_2D, personTexture1);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
 
 	glBegin(GL_QUADS);	
-	if (animationSpan >= 40) {
-		animationSpan = 0.0;
-		clock_gettime(CLOCK_REALTIME, &animationStart);
+	if (player.stats.animationSpan >= 40) {
+		player.stats.animationSpan = 0.0;
+		clock_gettime(CLOCK_REALTIME, &player.stats.animationStart);
 	}
 
-	if ((keys[XK_w] || keys[XK_s]) && animationSpan < 10) {
+	if ((keys[XK_w] || keys[XK_s]) && player.stats.animationSpan < 10) {
 		glTexCoord2f(0.5f, 0.0f); glVertex2f(-w, w);
 		glTexCoord2f(1.0f, 0.0f); glVertex2f(w, w);
 		glTexCoord2f(1.0f, 1.0f); glVertex2f(w, -w);
@@ -604,8 +605,8 @@ void renderCharacter(Player player, Game *g, float w, int keys[],
 		glTexCoord2f(0.0f, 1.0f); glVertex2f(-w,-w);
 	}
 	
-	clock_gettime(CLOCK_REALTIME, &animationCurrent);
-	animationSpan += timeDiff(&animationStart, &animationCurrent);
+	clock_gettime(CLOCK_REALTIME, &player.stats.animationCurrent);
+	player.stats.animationSpan += timeDiff(&player.stats.animationStart, &player.stats.animationCurrent);
 	
 	glEnd();
 	glDisable(GL_ALPHA_TEST);
