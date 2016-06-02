@@ -371,7 +371,7 @@ void check_gblock_collision(OType otype, Game *g, float xcheck, float ycheck)
 }
 
 template <typename OType>
-void updateObjGposStat(OType otype)
+void updateObjGposStat(OType &otype)
 {
 	otype.stats.gpos[0] = otype.stats.gpos[0] + otype.stats.vel[0];
 	otype.stats.gpos[1] = otype.stats.gpos[1] + otype.stats.vel[1];
