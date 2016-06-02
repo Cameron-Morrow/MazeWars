@@ -88,7 +88,7 @@ void drawBackground()
 {
 	glPushMatrix();
 	glTranslatef(res[0], 0, 0);
-
+/*
 	glBegin(GL_POLYGON);
 		glColor3ub(47, 47, 47);
 		glVertex2i(0, 0);
@@ -140,7 +140,189 @@ void drawBackground()
 		glVertex2i(-350, 0);
 		glVertex2i(-340, 10);
 		glVertex2i(-15, 10);
+	glEnd();*/
+	glBegin(GL_POLYGON);
+		glColor3ub(47, 47, 47);
+		glVertex2i(0, 0);
+		glColor3ub(84, 84, 84);
+		glVertex2i(-150, 0);
+		glColor3ub(48, 48, 48);
+		glVertex2i(-150, 920);
+		glColor3ub(54, 54, 54);
+		glVertex2i(-120, 950);
+		glColor3ub(84, 84, 84);
+		glVertex2i(0, 950);
 	glEnd();
+
+	/*glColor3ub(54, 54, 54);
+	glBegin(GL_POLYGON);
+		glVertex2i(-140, 910);
+		glVertex2i(-150, 0);
+		glVertex2i(-150, 920);
+		glVertex2i(-140, 115);
+	glEnd();*/
+	glBegin(GL_POLYGON);
+		glColor3ub(47, 47, 47);
+		glVertex2i(-1100, 0);
+		glColor3ub(84, 84, 84);
+		glVertex2i(-1250, 0);
+		glColor3ub(48, 48, 48);
+		glVertex2i(-1250, 920);
+		glColor3ub(54, 54, 54);
+		glVertex2i(-1220, 950);
+		glColor3ub(84, 84, 84);
+		glVertex2i(-1100, 950);
+	glEnd();
+
+	glColor3ub(54, 54, 54);
+	/*glBegin(GL_POLYGON);
+		glVertex2i(-1240, 910);
+		glVertex2i(-1250, 0);
+		glVertex2i(-1250, 920);
+		glVertex2i(-1240, 115);
+	glEnd();*/
+	glBegin(GL_POLYGON);
+		glColor3ub(47, 47, 47);
+		glVertex2i(0, 0);
+		glColor3ub(84, 84, 84);
+		glVertex2i(-1250, 0);
+		glColor3ub(48, 48, 48);
+		glVertex2i(-1250, 120);
+		glColor3ub(54, 54, 54);
+		glVertex2i(-1220, 150);
+		glColor3ub(84, 84, 84);
+		glVertex2i(0, 150);
+	glEnd();
+
+	glColor3ub(54, 54, 54);
+	glBegin(GL_POLYGON);
+		glVertex2i(-1240, 10);
+		glVertex2i(-1250, 0);
+		glVertex2i(-1250, 150);
+		glVertex2i(-1240, 145);
+	glEnd();
+
+	/*glColor3ub(179, 179, 179);
+	glBegin(GL_POLYGON);
+		glVertex2i(-1240, 115);
+		glVertex2i(-1250, 120);
+		glVertex2i(-1220, 150);
+		glVertex2i(-1215, 140);
+	glEnd();*/
+
+	glColor3ub(152, 152, 152);
+	glBegin(GL_POLYGON);
+		glVertex2i(-1240, 140);
+		glVertex2i(-1250, 150);
+		glVertex2i(0, 150);
+		glVertex2i(-15, 140);
+	glEnd();
+
+	glColor3ub(12, 12, 12);
+	glBegin(GL_POLYGON);
+		glVertex2i(-15, 140);
+		glVertex2i(0, 150);
+		glVertex2i(0, 0);
+		glVertex2i(-15,10);
+	glEnd();
+
+	/*glColor3ub(12, 12, 12);
+	glBegin(GL_POLYGON);
+		glVertex2i(0, 0);
+		glVertex2i(-1250, 0);
+		glVertex2i(-1240, 10);
+		glVertex2i(-15, 10);
+	glEnd();*/
+
+	// now the top bar
+	glBegin(GL_POLYGON);
+		glColor3ub(47, 47, 47);
+		glVertex2i(0, 800);
+		glColor3ub(84, 84, 84);
+		glVertex2i(-1250, 800);
+		glColor3ub(48, 48, 48);
+		glVertex2i(-1250, 920);
+		glColor3ub(54, 54, 54);
+		glVertex2i(-1220, 950);
+		glColor3ub(84, 84, 84);
+		glVertex2i(0, 950);
+	glEnd();
+
+	glColor3ub(54, 54, 54);
+	glBegin(GL_POLYGON);
+		glVertex2i(-1240, 810);
+		glVertex2i(-1250, 800);
+		glVertex2i(-1250, 920);
+		glVertex2i(-1240, 915);
+	glEnd();
+
+	glColor3ub(179, 179, 179);
+	glBegin(GL_POLYGON);
+		glVertex2i(-1240, 915);
+		glVertex2i(-1250, 920);
+		glVertex2i(-1220, 950);
+		glVertex2i(-1215, 940);
+	glEnd();
+
+	glColor3ub(152, 152, 152);
+	glBegin(GL_POLYGON);
+		glVertex2i(-1215, 940);
+		glVertex2i(-1220, 950);
+		glVertex2i(0, 950);
+		glVertex2i(-15, 940);
+	glEnd();
+
+	glColor3ub(12, 12, 12);
+	glBegin(GL_POLYGON);
+		glVertex2i(-15, 940);
+		glVertex2i(0, 950);
+		glVertex2i(0, 800);
+		glVertex2i(-15,810);
+	glEnd();
+
+	glColor3ub(12, 12, 12);
+	glBegin(GL_POLYGON);
+		glVertex2i(0, 800);
+		glVertex2i(-1250, 800);
+		glVertex2i(-1240, 810);
+		glVertex2i(-15, 810);
+	glEnd();
+
+
+/*
+	glColor3ub(179, 179, 179);
+	glBegin(GL_POLYGON);
+		glVertex2i(-140, 115);
+		glVertex2i(-150, 120);
+		glVertex2i(-120, 150);
+		glVertex2i(-115, 140);
+	glEnd();
+
+	glColor3ub(152, 152, 152);
+	glBegin(GL_POLYGON);
+		glVertex2i(-115, 140);
+		glVertex2i(-120, 150);
+		glVertex2i(0, 150);
+		glVertex2i(-15, 140);
+	glEnd();
+
+	glColor3ub(12, 12, 12);
+	glBegin(GL_POLYGON);
+		glVertex2i(-15, 140);
+		glVertex2i(0, 150);
+		glVertex2i(0, 0);
+		glVertex2i(-15,10);
+	glEnd();
+
+	glColor3ub(12, 12, 12);
+	glBegin(GL_POLYGON);
+		glVertex2i(0, 0);
+		glVertex2i(-150, 0);
+		glVertex2i(-140, 10);
+		glVertex2i(-15, 10);
+	glEnd();
+*/
+
 
 	glPopMatrix();	
 }
