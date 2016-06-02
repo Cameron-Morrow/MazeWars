@@ -989,7 +989,7 @@ void loadEndCreditsTextures()
 	CreditsImages[8] = ppm6GetImage((char*)"images/JOB.ppm");
 	CreditsImages[9] = ppm6GetImage((char*)"images/MATT.ppm");
 	CreditsImages[10] = ppm6GetImage((char*)"images/ROSE.ppm");
-	
+	CreditsImages[13] = ppm6GetImage((char*)"images/Exit.ppm");
 	
 	glGenTextures(1, &CreditsTextures[0]); //CloudsTexture
 	glGenTextures(1, &CreditsTextures[1]); //MountainsTexture
@@ -1004,6 +1004,7 @@ void loadEndCreditsTextures()
 	glGenTextures(1, &CreditsTextures[8]); //ME
 	glGenTextures(1, &CreditsTextures[9]); //MATT
 	glGenTextures(1, &CreditsTextures[10]); //flower
+	glGenTextures(1, &CreditsTextures[13]); //Exit
 
 	float h, w;
 	
@@ -1138,7 +1139,7 @@ void loadEndCreditsTextures()
 		GL_UNSIGNED_BYTE, dudeData);
 	free(dudeData);	
 	
-	//Dude Texture
+	
 	w = CreditsImages[12]->width;
 	h = CreditsImages[12]->height;
 	glBindTexture(GL_TEXTURE_2D, CreditsTextures[12]);
@@ -1148,6 +1149,17 @@ void loadEndCreditsTextures()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, ENDData);
 	free(ENDData);
+	
+	
+	w = CreditsImages[13]->width;
+	h = CreditsImages[13]->height;
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[13]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char *ExitData = buildAlphaData(CreditsImages[13]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, ExitData);
+	free(ExitData);
 }
 
 struct timespec CreditsTime;
@@ -1213,6 +1225,7 @@ void endCredits(Game *g, int keys[])
 	glEnd();
 	glPopMatrix();
 	/////////////////////////////////////////////////////////////////////
+	
 	w = CreditsImages[1]->width;
 	h = CreditsImages[1]->height;
 	
@@ -1267,6 +1280,28 @@ void endCredits(Game *g, int keys[])
 
         glEnd();
         glPopMatrix();
+
+	
+		
+	w = CreditsImages[13]->width/5;
+	h = CreditsImages[13]->height/5;
+	
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[13]);
+	glTranslatef(mov*5, 65, 0);
+	glScalef(1, 1, 1);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glBegin(GL_QUADS);
+	
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(0 , h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
+	glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
+
+	glEnd();
+	glPopMatrix();
+
 
 	/***********DUDE********************/
 	w = CreditsImages[11]->width;
@@ -1535,34 +1570,34 @@ void endCredits(Game *g, int keys[])
 		mvScore++;
 
 	u.bot = res[1]/2 + mvScore - 10;
-	u.left = res[0]/2 - 200;
+	u.left = res[0]/2 - 150;
 	u.center = 0;
 	ggprint40(&u, 48, 0x00FFFFFF, "Your Score: %d", g->Player_1.score);
 	
 	u.bot = res[1]/2 + mvScore - 210;
-	u.left = res[0]/2 - 200;
+	u.left = res[0]/2 - 150;
 	u.center = 0;
 	ggprint40(&u, 48, 0x00FFFFFF, "Monsters Killed: %d", g->Player_1.kills);
 	
 	u.bot = res[1]/2 + mvScore - 410;
-	u.left = res[0]/2 - 200;
+	u.left = res[0]/2 - 150;
 	u.center = 0;
 	ggprint40(&u, 48, 0x00FFFFFF, "Remaining Lives: %d", g->Player_1.lives);
 
 	u.bot = res[1]/2 + mvScore - 610;
-	u.left = res[0]/2 - 200;
+	u.left = res[0]/2 - 100;
 	u.center = 0;
-	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1: %d", g->Player_1.artifact[0]);
+	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1 :  %d", g->Player_1.artifact[0]);
 	
 	u.bot = res[1]/2 + mvScore - 810;
-	u.left = res[0]/2 - 200;
+	u.left = res[0]/2 - 100;
 	u.center = 0;
-	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1: %d", g->Player_1.artifact[1]);
+	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 2 :  %d", g->Player_1.artifact[1]);
 	
 	u.bot = res[1]/2 + mvScore - 1010;
-	u.left = res[0]/2 - 200;
+	u.left = res[0]/2 - 100;
 	u.center = 0;
-	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 1: %d", g->Player_1.artifact[2]);
+	ggprint40(&u, 48, 0x00FFFFFF, "Artifact 3 :  %d", g->Player_1.artifact[2]);
 		/////////////////////////////////////////////////////////////////////
 	//THE END
 	w = CreditsImages[10]->width;
@@ -1583,5 +1618,6 @@ void endCredits(Game *g, int keys[])
 	
 	glEnd();
 	glPopMatrix();
+
 }
 #endif
