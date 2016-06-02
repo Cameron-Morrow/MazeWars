@@ -29,6 +29,7 @@ void monsterMovement(Game *g, int monNum, int startx, int starty);
 void monsterGetShot(Game *g, int monNum, int startx, int starty);
 void monsterDamagePlayer(Game *g, int monNum, int startx, int starty);
 void renderCharacterEnemy(Person personc, Game *g, float w, int keys[] ,GLuint personTexture1c, int i);
+int PauseOptions(Game *g, int keys[]);
 void renderPauseBackground();
 void renderPauseButtons(int x);
 int PAUSE(Game *g, int keys[]);
