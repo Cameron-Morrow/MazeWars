@@ -1711,13 +1711,16 @@ int parseToBlockTextures(vector<vector<Block> > &dungeon,
 			if (col == 0) {
 				if (dungeon[row+1][col].maintype == 0) type += 4;
 				if (dungeon[row][col+1].maintype == 0) type += 2;
+				return type;
 			} else if (col < specs.cols - 1) {
 				if (dungeon[row][col-1].maintype == 0) type += 8;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
 				if (dungeon[row][col+1].maintype == 0) type += 2;
+				return type;
 			} else {
 				if (dungeon[row][col-1].maintype == 0) type += 8;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
+				return type;
 			}
 			return type;
 		} else if (row < specs.rows - 1) {
@@ -1725,28 +1728,34 @@ int parseToBlockTextures(vector<vector<Block> > &dungeon,
 				if (dungeon[row-1][col].maintype == 0) type += 1;
 				if (dungeon[row][col+1].maintype == 0) type += 2;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
+				return type;
 			} else if (col < specs.cols - 1) {
 				if (dungeon[row-1][col].maintype == 0) type += 1;
 				if (dungeon[row][col+1].maintype == 0) type += 2;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
 				if (dungeon[row][col-1].maintype == 0) type += 8;
+				return type;
 			} else {
 				if (dungeon[row-1][col].maintype == 0) type += 1;
 				if (dungeon[row+1][col].maintype == 0) type += 4;
 				if (dungeon[row][col-1].maintype == 0) type += 8;
+				return type;
 			}
 			return type;
 		} else {
 			if (col == 0) {
 				if (dungeon[row-1][col].maintype == 0) type += 1;
 				if (dungeon[row][col+1].maintype == 0) type += 2;
+				return type;
 			} else if (col < specs.cols - 1) {
 				if (dungeon[row][col-1].maintype == 0) type += 8;
 				if (dungeon[row-1][col].maintype == 0) type +=1;
 				if (dungeon[row][col+1].maintype == 0) type += 2;
+				return type;
 			} else {
 				if (dungeon[row][col-1].maintype == 0) type += 8;
 				if (dungeon[row-1][col].maintype == 0) type += 1;
+				return type;
 			}
 			return type;
 		}
