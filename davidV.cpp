@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <vector>
 #include "davidV.h"
+#include "mtime.h"
 
 
 template <typename T>
@@ -193,9 +194,6 @@ void setDisabledTurn(DFork &, Block);
 void setDisabledTurn(DFork &, Block, int);
 bool checkAttemptedTurn(DFork, int);
 void connectForks(DFork &, DFork &);
-
-void renderCharacter(Player player, Game *g, float w, int keys[], 
-	GLuint personTexture1);
 
 int parseSurroundingBlocks(DSpecs specs, vector<vector<Block> > &dungeon,
 		Block block);

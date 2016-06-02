@@ -30,6 +30,9 @@ bool checkDistanceBlock(Game *, gblock, float, float);
 void drawBlock(Game *, gblock);
 void drawGBlocks(Game *);
 
+void renderCharacter(Player player, Game *g, float w, int keys[], 
+	GLuint personTexture1);
+
 void set_gblock_size(double&, double&, double);
 void set_gblock_gpos(double&, int, int);
 void create_gblock(gblock&, int, int, int);
