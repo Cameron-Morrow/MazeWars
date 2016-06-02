@@ -980,7 +980,7 @@ void loadEndCreditsTextures()
 	CreditsImages[4] = ppm6GetImage((char*)"parallax/grass.ppm");
 	CreditsImages[5] = ppm6GetImage((char*)"parallax/trees2.ppm");
 	CreditsImages[11] = ppm6GetImage((char*)"parallax/Dude.ppm");
-	
+	CreditsImages[12] = ppm6GetImage((char*)"images/THE_END.ppm");
 	CreditsImages[6] = ppm6GetImage((char*)"images/CAM.ppm");
 	CreditsImages[7] = ppm6GetImage((char*)"images/DAVID.ppm");	
 	CreditsImages[8] = ppm6GetImage((char*)"images/JOB.ppm");
@@ -995,7 +995,7 @@ void loadEndCreditsTextures()
 	glGenTextures(1, &CreditsTextures[4]); //GrassTexture
 	glGenTextures(1, &CreditsTextures[5]); //Trees2Texture
 	glGenTextures(1, &CreditsTextures[11]); //DudeTexture
-	
+	glGenTextures(1, &CreditsTextures[12]); //THE_ENDTexture
 	glGenTextures(1, &CreditsTextures[6]); //CAM
 	glGenTextures(1, &CreditsTextures[7]); //DAVE
 	glGenTextures(1, &CreditsTextures[8]); //ME
@@ -1134,6 +1134,17 @@ void loadEndCreditsTextures()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, dudeData);
 	free(dudeData);	
+	
+	//Dude Texture
+	w = CreditsImages[12]->width;
+	h = CreditsImages[12]->height;
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[12]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char *ENDData = buildAlphaData(CreditsImages[12]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, ENDData);
+	free(ENDData);
 }
 
 struct timespec CreditsTime;
@@ -1142,10 +1153,10 @@ static double CreditsSpan = 0.0;
 
 void endCredits(Game *g, int keys[])
 {
-	static bool creditsMusic = false;
-	if (!creditsMusic) {
+	static int creditsMusic = 1;
+	if (creditsMusic) {
 		play_sounds(19, 1);
-		creditsMusic = true;
+		creditsMusic--;
 	}
 	Rect u;
 	u.bot = -res[1]/2;
@@ -1503,6 +1514,27 @@ void endCredits(Game *g, int keys[])
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, CreditsTextures[10]);
 	glTranslatef(3*3600+mov*10, 150, 0);
+	glScalef(1, 1, 1);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glBegin(GL_QUADS);
+	
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(0 , h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
+	glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
+
+	glEnd();
+	glPopMatrix();
+	
+		/////////////////////////////////////////////////////////////////////
+	//flower
+	w = CreditsImages[10]->width;
+	h = CreditsImages[10]->height;
+	
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[12]);
+	glTranslatef(3*4360+mov*10, 150, 0);
 	glScalef(1, 1, 1);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
