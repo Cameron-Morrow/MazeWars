@@ -14,6 +14,8 @@ typedef int Explosive;
 
 struct Player {
 	Stats stats;
+	double score = 0;
+	double kills = 0;
 	PowerUp P_UP[3];
 	double Max_Health = 100;
 	double Current_Health = 100;
@@ -31,6 +33,8 @@ struct Player {
 		artifact[0] = 0;
 		artifact[1] = 0;
 		artifact[2] = 0;
+		score = 0;
+		kills = 0;
 	}
 	void draw(float x, float y, Stats stats) {
 		glColor3f((float) stats.color[0],255,(float) \
