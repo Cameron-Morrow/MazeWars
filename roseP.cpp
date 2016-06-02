@@ -24,7 +24,7 @@
 ALuint alSource[20];
 ALuint alBuffer[20];
 
-static float Volume = 0.0f;
+static float Volume = 1.0f;
 void getVolume(float V)
 {
 		Volume = V;
