@@ -489,6 +489,25 @@ void drawLives(int x, int y)
 	glEnd();
 	glPopMatrix();
 }
+Ppmimage *graveImage = {NULL};
+GLuint graveTexture;
+void loadgraveSprite()
+{
+	graveImage = ppm6GetImage((char*)"images/grave.ppm");
+	glGenTextures(1, &graveTexture); 
+	
+	float w, h;
+	//lives texture
+	w = graveImage->width;
+	h = graveImage->height;
+	glBindTexture(GL_TEXTURE_2D, graveTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char *graveData = buildAlphaData(graveImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, graveData);
+	free(graveData);
+}
 void GameOver()
 {
 	Rect r;
@@ -496,6 +515,25 @@ void GameOver()
 	r.left = res[1]/2-80;
 	r.center = 0;
 	ggprint40(&r, 160, 0x00ff0000, "GAME OVER \n F6 TO RESTART");
+	
+	glColor3ub(255, 255, 255);	
+	float w = graveImage->width/4;
+	float h = graveImage->height/4;
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, graveTexture);
+	glTranslatef(res[0]/2, 0, 0);
+	glScalef(1, 1, 1);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glBegin(GL_QUADS);
+	
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(0 , h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
+	glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
+
+	glEnd();
+	glPopMatrix();
 }
 void Restart(Game *x)
 {
