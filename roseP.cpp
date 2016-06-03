@@ -176,7 +176,19 @@ void play_sounds(int soundOption, int loop)
     }
     alSourcePlay(alSource[soundOption]);
 }
+void play_sounds(int soundOption, char mute)
+{
+    //Set volume and pitch.
+    alSourcef(alSource[soundOption], AL_GAIN, 0.0f);
+    alSourcef(alSource[soundOption], AL_PITCH, 0.0f);
+    alSourcei(alSource[soundOption], AL_LOOPING, AL_FALSE);
 
+    //No looping for sound.
+    if (alGetError() != AL_NO_ERROR) {
+        printf("Error: Setting Source\n");
+    }
+    alSourcePlay(alSource[soundOption]);
+}
 void bubblez(int radius, int x, int y, float red, float green, float blue)
 {
     //Get bubbles to appear.
