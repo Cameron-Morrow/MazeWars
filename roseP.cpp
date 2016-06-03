@@ -18,11 +18,17 @@
 #include <stdlib.h>
 #include </usr/include/AL/alut.h>
 #include <cmath>
+#include "fonts/fonts.h"
 #include "game_objects.h"
 #include "roseP.h"
+#include "ppm.h"
+#include "jobG.h"
 
 ALuint alSource[20];
 ALuint alBuffer[20];
+
+Ppmimage *xbox1 = {NULL};
+GLuint name;
 
 static float Volume = 1.0f;
 void getVolume(float V)
@@ -108,6 +114,11 @@ void load_sounds()
     alGenSources(1, &alSource[6]);
     alSourcei(alSource[6], AL_BUFFER, alBuffer[6]);
     
+    //Press key r sound.
+    alBuffer[7] = alutCreateBufferFromFile("./sound/Gum_Bubble_Pop.wav");
+    alGenSources(1, &alSource[7]);
+    alSourcei(alBuffer[7], AL_BUFFER, alBuffer[7]);
+
     //Cameron's Piano.
     alBuffer[11] = alutCreateBufferFromFile("./sound/c.wav");
     alGenSources(1, &alSource[11]);
@@ -212,6 +223,7 @@ void pressR(Game *g)
     //Special keystroke for bubblez.
     std::cout << "R pressed" << std::endl;
     srand(NULL);
+    play_sounds(7);
     int x = g->Player_1.stats.spos[0];
     int y = g->Player_1.stats.spos[1];
 
@@ -223,6 +235,34 @@ void pressR(Game *g)
 	 float blue = rand() * 20;
          bubblez(radius, x, y, red, green, blue);
     }
+}
+
+void render_xbox1(Game *g)
+{
+    glEnable(GL_TEXTURE_2D);
+
+    float w, h;
+    xbox1 = ppm6GetImage((char *)"images/xbox1.ppm");
+    glGenTextures(1, &name);
+    
+    w = xbox1->width;
+    h = xbox1->height;
+    glBindTexture(GL_TEXTURE_2D, name);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    unsigned char *controlData = buildAlphaData(xbox1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+            GL_UNSIGNED_BYTE, controlData);
+    free(controlData);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(-w, w);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f( w, w);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f( w, -w);
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(-w,-w);
+
+    glEnd();
+    
 }
 
 void render_maze(Game *g, GLuint mazeTexture, Ppmimage *mazeImage) 

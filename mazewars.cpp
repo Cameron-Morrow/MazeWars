@@ -717,6 +717,10 @@ void physics(Game *g)
 		checkController(axis, g);
 	}
 
+	if (keys[XK_n]) {
+		render_xbox1(g);
+	}
+
 	if ((keys[XK_space] || joy[0]) && g->Player_1.Current_Ammo > 0 && 
 		  g->Player_1.Current_Health > 0 && !Pause && !winCondition) {
 		g->Player_1.stats.angle = g->gun.stats.angle;
@@ -879,7 +883,8 @@ void render(Game *g)
 	graveKeyPress(keys);
 	//Keystroke for R
 	if (keys[XK_r]) {
-                 pressR(g);
+                pressR(g);
+		play_sounds(7);
          }
 	getVolume(VOLUME);
 	if (g->Player_1.lives == 0) {

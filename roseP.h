@@ -16,5 +16,6 @@ void getVolume(float V);
 void convertPNGtoPPM();
 void convertPPMtoPNG();
 void removePPMImages();
+void render_xbox1(Game *g);
 
 #endif
