@@ -8,6 +8,7 @@
 #include "mtime.h"
 
 void getScreenRes(int x, int y);
+void loadgraveSprite();
 void pointPlayer(Game *g, int savex, int savey);
 void drawHealth(Player *x);
 void drawAmmo(Player x);
