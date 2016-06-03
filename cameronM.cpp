@@ -850,7 +850,7 @@ GLuint personTexture1c, int i)
 	glDisable(GL_ALPHA_TEST);
 	glPopMatrix();
 }
-int PAUSE(Game *g, int keys[])
+int PAUSE(Game *g, int keys[], float &vol)
 {
 	static int kchkr = 0;
 	clock_gettime(CLOCK_REALTIME, &timeCurrentqr);
@@ -898,26 +898,30 @@ int PAUSE(Game *g, int keys[])
 	if (kchkr < 0)
 		kchkr = 4;
 	renderPauseBackground();
-	renderPauseButtons(kchkr);
+	renderPauseButtons(kchkr, vol);
 	kchkr = kchkr%5;
-	if ((keys[XK_Return] && kchkr == 0) || OPTIONS) {
-		OPTIONS = PauseOptions(g, keys);
+	if (keys[XK_Return] && kchkr == 0) {
+		PauseOptions(g, keys);
 	}
 	if (keys[XK_Return] && kchkr == 1) {
 		return 2;
 	}
-	if (keys[XK_Return] && kchkr == 2) {
-		Restart(g);
+	if (keys[XK_Left] && kchkr == 2 && vol > 0.0f) {
+		vol-=0.001f;
+	}
+	if (keys[XK_Right] && kchkr == 2 && vol < 1.0f) {
+		vol+=0.001f;
 	}
 	if (keys[XK_Return] && kchkr == 3) {
 		Restart(g);
+		return 3;
 	}
 	if (keys[XK_Return] && kchkr == 4) {
 		return 1;
 	}
 	return 0;
 }
-void renderPauseButtons(int x)
+void renderPauseButtons(int x, float vol)
 {
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2) + 50 - 35, 0);
@@ -972,9 +976,9 @@ void renderPauseButtons(int x)
 	
 	glPopMatrix();
 	q.bot = res[1]/2 - 40 + 100;
-	q.left = res[0]/2 - 25;
+	q.left = res[0]/2 - 65;
 	q.center = 0;
-	ggprint8b(&q, 48, 0x00000000, "Options");
+	ggprint8b(&q, 48, 0x00000000, "Controls (Hold Enter)");
 	///////////////////////////////////////////
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2) + 115, 0);
@@ -1002,14 +1006,17 @@ void renderPauseButtons(int x)
 	ggprint16(&q, 48, 0x00000000, "PAUSED");
 
 	///////////////////////////////////////////
-	glPushMatrix();
-	glTranslatef((res[0]/2), (res[1]/2)- 35, 0);
+	/******************************************/
 	
 	//change color based on selected or not
 	if (x == 2)
 		glColor3ub(160, 160, 160);
 	else
 		glColor3ub(100, 100, 100);
+
+	double remaining = 100-(vol * 100);
+	glPushMatrix();
+	glTranslatef((res[0]/2), (res[1]/2)- 35, 0);
 
 	glBegin(GL_POLYGON);
 		glVertex2i(-90, -15);
@@ -1026,11 +1033,45 @@ void renderPauseButtons(int x)
 	glEnd();
 
 	glPopMatrix();
-	
+	int test = 10-(vol*100);
+	if (100-remaining > 0) {
+		if (x == 2)
+			glColor3ub(0, 0, 160);
+		else
+			glColor3ub(100, 210, 250);
+		glPushMatrix();
+		glTranslatef((res[0]/2) - remaining, (res[1]/2)- 35, 0);
+
+		glBegin(GL_POLYGON);
+			if (100-remaining > 10) {
+				glVertex2i(-(90 - remaining), -15);
+				glVertex2i(-(100 - remaining), -5);
+				glVertex2i(-(100 - remaining), 5);
+				glVertex2i(-(90 - remaining), 15);
+				glVertex2i((90 - remaining), 15);
+				glVertex2i((100 - remaining), 5);
+				glVertex2i((100 - remaining), -5);
+				glVertex2i((90 - remaining), -15);
+			} else {
+				glVertex2i(-(90 - remaining + test), -15 + (test));
+				glVertex2i(-(100 - remaining), -5);
+				glVertex2i(-(100 - remaining), 5);
+				glVertex2i(-(90 - remaining + test), 15 - (test));
+				glVertex2i((90 - remaining + test), 15 - (test));
+				glVertex2i((100 - remaining), 5);
+				glVertex2i((100 - remaining), -5);
+				glVertex2i((90 - remaining + test), -15 + (test));
+			}
+		glEnd();
+		
+		glPopMatrix();
+	}
 	q.bot = res[1]/2 - 40;
-	q.left = res[0]/2 - 15;
+	q.left = res[0]/2 - 65;
 	q.center = 0;
-	ggprint8b(&q, 48, 0x00000000, "Save");
+	ggprint8b(&q, 16, 0x00ffffff, "VOLUME (Left or Right)");
+	
+	/******************************************/
 	///////////////////////////////////////////
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2) - 50 - 35, 0);
@@ -1190,166 +1231,8 @@ void renderPauseBackground()
 
 	glPopMatrix();
 }
-int PauseOptions(Game *g, int keys[])
+void PauseOptions(Game *g, int keys[])
 {
-	int finished = 0;
-	static int x = 0;
-
-	glPushMatrix();
-	glTranslatef((res[0]/2), res[1]/2, 0);
-
-	//Background
-	glColor3ub(47, 47, 47);
-	glBegin(GL_POLYGON);
-		glColor3ub(47, 47, 47);
-		glVertex2i(175, -150);
-		glColor3ub(47, 47, 47);
-		glVertex2i(150, -175);
-		glColor3ub(84, 84, 84);
-		glVertex2i(-150, -175);
-		glColor3ub(84, 84, 84);
-		glVertex2i(-175, -150);
-		glColor3ub(48, 48, 48);
-		glVertex2i(-175, 120);
-		glColor3ub(54, 54, 54);
-		glVertex2i(-145, 150);
-		glColor3ub(84, 84, 84);
-		glVertex2i(150, 150);
-		glColor3ub(84, 84, 84);
-		glVertex2i(175, 125);
-	glEnd();
-
-	//left hand border
-	glColor3ub(54, 54, 54);
-	glBegin(GL_POLYGON);
-		glVertex2i(-165, 10-150);
-		glVertex2i(-175, 0-150);
-		glVertex2i(-175, 120);
-		glVertex2i(-165, 115);
-	glEnd();
-
-	//top left corner border
-	glColor3ub(179, 179, 179);
-	glBegin(GL_POLYGON);
-		glVertex2i(-165, 115);
-		glVertex2i(-175, 120);
-		glVertex2i(-145, 150);
-		glVertex2i(-140, 140);
-	glEnd();
-
-	//top border
-	glColor3ub(152, 152, 152);
-	glBegin(GL_POLYGON);
-		glVertex2i(-140, 140);
-		glVertex2i(-145, 150);
-		glVertex2i(175-25, 150);
-		glVertex2i(160-25, 140);
-	glEnd();
-
-	//TOP RIGHT HAND BORDER
-	glColor3ub(179, 179, 179);
-	glBegin(GL_POLYGON);
-		glVertex2i(+160, 115);
-		glVertex2i(+175, 125);
-		glVertex2i(+150, 150);
-		glVertex2i(+135, 140);
-	glEnd();
-
-	//right hand border
-	glColor3ub(12, 12, 12);
-	glBegin(GL_POLYGON);
-		glVertex2i(160, 140-25);
-		glVertex2i(175, 150-25);
-		glVertex2i(175, 0-150);
-		glVertex2i(160,10-150);
-	glEnd();
-
-	//BOTTOM RIGHT HAND BORDER
-	glColor3ub(0, 0, 0);
-	glBegin(GL_POLYGON);
-		glVertex2i(165-5, -115-25);
-		glVertex2i(175, -120-25-5);
-		glVertex2i(145, -150-25);
-		glVertex2i(140, -140-25);
-	glEnd();
-
-	//Bottom Border
-	glColor3ub(12, 12, 12);
-	glBegin(GL_POLYGON);
-		glVertex2i(175-25, 0-175);
-		glVertex2i(-175+25, 0-175);
-		glVertex2i(-165+25, 10-175);
-		glVertex2i(165-25, 10-175);
-	glEnd();
-
-	//BOTTOM LEFT HAND BORDER
-	glColor3ub(63, 63, 63);
-	glBegin(GL_POLYGON);
-		glVertex2i(-165, -115-25);
-		glVertex2i(-175, -120-25-5);
-		glVertex2i(-145-5, -150-25);
-		glVertex2i(-140, -140-25);
-	glEnd();
-
-	glPopMatrix();
-	
-	glPushMatrix();
-	glTranslatef((res[0]/2), (res[1]/2) + 50 - 35, 0);
-	//change color based on selected or not
-	if (x == 1)
-		glColor3ub(160, 160, 160);
-	else
-		glColor3ub(100, 100, 100);
-	
-	glBegin(GL_POLYGON);
-		glVertex2i(-90, -15);
-		glVertex2i(-100, -5);
-
-		glVertex2i(-100, 5);
-		glVertex2i(-90, 15);
-
-		glVertex2i(90, 15);
-		glVertex2i(100, 5);
-
-		glVertex2i(100, -5);
-		glVertex2i(90, -15);
-	glEnd();
-	
-	glPopMatrix();
-	Rect q;
-	q.bot = res[1]/2 - 40 + 50;
-	q.left = res[0]/2 - 55;
-	q.center = 0;
-	ggprint8b(&q, 48, 0x00000000, "Controls");
-	///////////////////////////////////////////
-	glPushMatrix();
-	glTranslatef((res[0]/2), (res[1]/2)  - 35 + 100, 0);
-	//change color based on selected or not
-	if (x == 0)
-		glColor3ub(160, 160, 160);
-	else
-		glColor3ub(100, 100, 100);
-	
-	glBegin(GL_POLYGON);
-		glVertex2i(-90, -15);
-		glVertex2i(-100, -5);
-
-		glVertex2i(-100, 5);
-		glVertex2i(-90, 15);
-
-		glVertex2i(90, 15);
-		glVertex2i(100, 5);
-
-		glVertex2i(100, -5);
-		glVertex2i(90, -15);
-	glEnd();
-	
-	glPopMatrix();
-	q.bot = res[1]/2 - 40 + 100;
-	q.left = res[0]/2 - 25;
-	q.center = 0;
-	ggprint8b(&q, 48, 0x00000000, "Return To Pause Menu");
-	///////////////////////////////////////////
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2) + 115, 0);
 	glColor3ub(100, 100, 100);
@@ -1369,20 +1252,70 @@ int PauseOptions(Game *g, int keys[])
 	glEnd();
 
 	glPopMatrix();
-
+	Rect q;
 	q.bot = res[1]/2 + 105;
-	q.left = res[0]/2 - 40;
+	q.left = res[0]/2 - 50;
 	q.center = 0;
-	ggprint16(&q, 48, 0x00000000, "OPTIONS");
+	ggprint16(&q, 48, 0x00000000, "CONTROLS");
+	///////////////////////////////////////////
+	
+	glPushMatrix();
+	glTranslatef((res[0]/2), (res[1]/2)  - 35 + 100, 0);
+	//change color based on selected or not
+		glColor3ub(100, 100, 100);
+	
+	glBegin(GL_POLYGON);
+		glVertex2i(-90, -15);
+		glVertex2i(-100, -5);
+
+		glVertex2i(-100, 5);
+		glVertex2i(-90, 15);
+
+		glVertex2i(90, 15);
+		glVertex2i(100, 5);
+
+		glVertex2i(100, -5);
+		glVertex2i(90, -15);
+	glEnd();
+	
+	glPopMatrix();
+	q.bot = res[1]/2 - 40 + 100;
+	q.left = res[0]/2 - 45;
+	q.center = 0;
+	ggprint8b(&q, 48, 0x00000000, "WASD Movement");
 
 	///////////////////////////////////////////
+	
+	glPushMatrix();
+	glTranslatef((res[0]/2), (res[1]/2) + 50 - 35, 0);
+	//change color based on selected or not
+		glColor3ub(100, 100, 100);
+	
+	glBegin(GL_POLYGON);
+		glVertex2i(-90, -15);
+		glVertex2i(-100, -5);
+
+		glVertex2i(-100, 5);
+		glVertex2i(-90, 15);
+
+		glVertex2i(90, 15);
+		glVertex2i(100, 5);
+
+		glVertex2i(100, -5);
+		glVertex2i(90, -15);
+	glEnd();
+	
+	glPopMatrix();
+	q.bot = res[1]/2 - 40 + 50;
+	q.left = res[0]/2 - 40;
+	q.center = 0;
+	ggprint8b(&q, 48, 0x00000000, "Mouse To Aim");
+	///////////////////////////////////////////
+
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2)- 35, 0);
 	
 	//change color based on selected or not
-	if (x == 2)
-		glColor3ub(160, 160, 160);
-	else
 		glColor3ub(100, 100, 100);
 
 	glBegin(GL_POLYGON);
@@ -1402,17 +1335,14 @@ int PauseOptions(Game *g, int keys[])
 	glPopMatrix();
 	
 	q.bot = res[1]/2 - 40;
-	q.left = res[0]/2 - 15;
+	q.left = res[0]/2 - 50;
 	q.center = 0;
-	ggprint8b(&q, 48, 0x00000000, "Nothing Yet");
+	ggprint8b(&q, 48, 0x00000000, "Spacebar to shoot");
 	///////////////////////////////////////////
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2) - 50 - 35, 0);
 	
 	//change color based on selected or not
-	if (x == 3)
-		glColor3ub(160, 160, 160);
-	else
 		glColor3ub(100, 100, 100);
 
 	glBegin(GL_POLYGON);
@@ -1431,17 +1361,14 @@ int PauseOptions(Game *g, int keys[])
 
 	glPopMatrix();
 	q.bot = res[1]/2 - 90;
-	q.left = res[0]/2 - 20;
+	q.left = res[0]/2 - 30;
 	q.center = 0;
-	ggprint8b(&q, 48 , 0x00000000, "Volume");
+	ggprint8b(&q, 48 , 0x00000000, "F6 Restart");
 	//////////////////////////////////////////////
 	glPushMatrix();
 	glTranslatef((res[0]/2), (res[1]/2) - 100 - 35, 0);
 	
 	//change color based on selected or not
-	if (x == 4)
-		glColor3ub(160, 160, 160);
-	else
 		glColor3ub(100, 100, 100);
 
 	glBegin(GL_POLYGON);
@@ -1460,47 +1387,9 @@ int PauseOptions(Game *g, int keys[])
 
 	glPopMatrix();
 	q.bot = res[1]/2 - 140;
-	q.left = res[0]/2 - 15;
+	q.left = res[0]/2 - 30;
 	q.center = 0;
-	ggprint8b(&q, 48, 0x00000000, "Exit Game");
-	
-		clock_gettime(CLOCK_REALTIME, &timeCurrentqr);
-	if (keys[XK_Up]) {
-		timeSpanTq = timeDiff(&timeTq, &timeCurrentqr);
-		if (timeSpanTq > 0.2) {
-			clock_gettime(CLOCK_REALTIME, &timeTq);
-			x--;
-		}
-	}
-	if (keys[XK_Down]) {
-		timeSpanTr = timeDiff(&timeTr, &timeCurrentqr);
-		if (timeSpanTr > 0.2) {
-			clock_gettime(CLOCK_REALTIME, &timeTr);
-			x++;
-		}
-	}
-	
-	
-	x = x%5;
-	if (x < 0)
-		x = 4;
-	x = x%5;
-	if (keys[XK_Return] && x == 0) {
-		
-	}
-	if (keys[XK_Return] && x == 1) {
-		
-	}
-	if (keys[XK_Return] && x == 2) {
-		
-	}
-	if (keys[XK_Return] && x == 3) {
-		
-	}
-	if (keys[XK_Return] && x == 4) {
-		return 0;
-	}
-	return 1;
+	ggprint8b(&q, 48, 0x00000000, "F7 Suicide");
 }
 Ppmimage *CreditsImages[16] = {NULL};
 GLuint CreditsTextures[16];
