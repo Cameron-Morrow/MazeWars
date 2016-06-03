@@ -213,6 +213,7 @@ int main(int argc, char *argv[])
 				Pause = 0;
 
 		} else {
+			titleScreen = 0;
 		    glClearColor(0.8,0.8,0.8,1.0);
 		    render(&game);
 		}
