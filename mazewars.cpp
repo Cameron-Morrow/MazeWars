@@ -500,6 +500,7 @@ void init_opengl(void)
 
 	loadEndCreditsTextures();
 	loadLivesSprite();
+	loadgraveSprite();
 }
 
 void check_resize(XEvent *e)
@@ -840,10 +841,7 @@ void render(Game *g)
 		}
 		g->Player_1.Current_Health = g->Player_1.Max_Health;
 	}
-	if (g->Player_1.lives == 0) {
-		GameOver();
-		g->Player_1.gameOver = true;
-	}
+
 	//drawHealthPack(500, 400, 0, g);
 	//drawHealthPack(100, 800, 0, g);
 	float w = personImage1->width/4;
@@ -884,4 +882,8 @@ void render(Game *g)
                  pressR(g);
          }
 	getVolume(VOLUME);
+	if (g->Player_1.lives == 0) {
+		g->Player_1.gameOver = true;
+		GameOver();
+	}
 }
