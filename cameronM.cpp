@@ -770,6 +770,7 @@ GLuint personTexture1c, int i)
 }
 int PAUSE(Game *g, int keys[], float &vol)
 {
+	play_sounds(6, 'm');
 	static int kchkr = 0;
 	clock_gettime(CLOCK_REALTIME, &timeCurrentqr);
 	if (keys[XK_Up]) {
@@ -1530,6 +1531,7 @@ static double CreditsSpan = 0.0;
 
 void endCredits(Game *g, int keys[])
 {
+    play_sounds(6, 'm');
 	static int creditsMusic = 1;
 	if (creditsMusic) {
 		play_sounds(19, 1);
@@ -1554,15 +1556,15 @@ void endCredits(Game *g, int keys[])
 
 	if (keys[XK_a] && mov < 0 && !ending && (!collide1 || jmp) \
 	&& !collideMoveL)
-		mov += 0.3f;
+		mov += 1.0f;
 	if (keys[XK_d] && mov > -1271 && !ending && (!collide2 || jmp) \
 	&& !collideMoveR)
-		mov -= 0.3f;
+		mov -= 1.0f;
 	if (keys[XK_a] && mov < 0 && !ending && (!collide1 || jmp) && collideMoveL)
-		mov += 0.05f;
+		mov += 0.35f;
 	if (keys[XK_d] && mov > -1271 && !ending && (!collide2 || jmp) \
 	&& collideMoveR)
-		mov -= 0.05f;
+		mov -= 0.35f;
 	if (keys[XK_space] && !jmp && (jmpspd == 0 || jmpspd == 65)) {
 		jmp = 1;
 	}
@@ -1587,10 +1589,10 @@ void endCredits(Game *g, int keys[])
 		ending = true;
 	}
 	if (collideMoveR) {
-		MOVE+=2;
+		MOVE+=2.0f;
 	}
 	if (collideMoveL) {
-		MOVE-=2;
+		MOVE-=2.0f;
 	}
 	if (ontop && keys[XK_Down])
 		ontop = false;
@@ -1730,13 +1732,13 @@ void endCredits(Game *g, int keys[])
 	
 	w = CreditsImages[14]->width/10;
 	h = CreditsImages[14]->height/10;
-	if ((((mov*5+3500+60+MOVE) <= res[0]/2 + 2) && ((mov*5+3500+60+MOVE) >= \
-	res[0]/2 - 2)) && !jmp)
+	if ((((mov*5+3500+60+MOVE) <= res[0]/2 + 5) && ((mov*5+3500+60+MOVE) >= \
+	res[0]/2 - 5)) && !jmp)
 		collideMoveL = true;
 	else
 		collideMoveL = false;
-	if ((((mov*5+3500-10+MOVE) <= res[0]/2 + 2) && ((mov*5+3500-10+MOVE) >= \
-	res[0]/2 - 2)) && !jmp)
+	if ((((mov*5+3500-10+MOVE) <= res[0]/2 + 5) && ((mov*5+3500-10+MOVE) >= \
+	res[0]/2 - 5)) && !jmp)
 		collideMoveR = true;
 	else
 		collideMoveR = false;
