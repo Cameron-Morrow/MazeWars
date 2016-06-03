@@ -693,6 +693,8 @@ void physics(Game *g)
                 if(timeSpanT6 > 0.2){
                         clock_gettime(CLOCK_REALTIME, &timeT6);
 			Pause = !Pause;
+			if (!Pause)
+				play_sounds(6 , 1);
 		}
 	}
 	if (keys[XK_a] && !g->Player_1.gameOver && !Pause && !winCondition) {
@@ -796,8 +798,6 @@ void physics(Game *g)
 	if (keys[XK_F5] && !Pause && !winCondition) {
 		if (g->Player_1.Current_Health > 0)
 			play_sounds(4);
-		else 
-			return;
 	}
 
 	if (keys[XK_F7] && !g->Player_1.gameOver && !Pause) {
@@ -871,7 +871,7 @@ void render(Game *g)
 	//if(g->Player_1.Current_Health > 0 && !g->Player_1.gameOver)
 	//	drawOType(g->Player_1, g);
 
-	play_sounds(6);
+	//play_sounds(6);
 	if (!a) {
 		play_sounds(6,1);
 		a++;
