@@ -1502,8 +1502,8 @@ int PauseOptions(Game *g, int keys[])
 	}
 	return 1;
 }
-Ppmimage *CreditsImages[15] = {NULL};
-GLuint CreditsTextures[15];
+Ppmimage *CreditsImages[16] = {NULL};
+GLuint CreditsTextures[16];
 
 void loadEndCreditsTextures()
 {
@@ -1521,6 +1521,8 @@ void loadEndCreditsTextures()
 	CreditsImages[9] = ppm6GetImage((char*)"images/MATT.ppm");
 	CreditsImages[10] = ppm6GetImage((char*)"images/ROSE.ppm");
 	CreditsImages[13] = ppm6GetImage((char*)"images/Exit.ppm");
+	CreditsImages[14] = ppm6GetImage((char*)"parallax/WoodCrate.ppm");
+	CreditsImages[15] = ppm6GetImage((char*)"parallax/MetalCrate.ppm");
 	
 	glGenTextures(1, &CreditsTextures[0]); //CloudsTexture
 	glGenTextures(1, &CreditsTextures[1]); //MountainsTexture
@@ -1536,6 +1538,8 @@ void loadEndCreditsTextures()
 	glGenTextures(1, &CreditsTextures[9]); //MATT
 	glGenTextures(1, &CreditsTextures[10]); //flower
 	glGenTextures(1, &CreditsTextures[13]); //Exit
+	glGenTextures(1, &CreditsTextures[14]); //wood
+	glGenTextures(1, &CreditsTextures[15]); //Metal
 
 	float h, w;
 	
@@ -1691,6 +1695,26 @@ void loadEndCreditsTextures()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, ExitData);
 	free(ExitData);
+	
+	w = CreditsImages[14]->width;
+	h = CreditsImages[14]->height;
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[14]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char *woodData = buildAlphaData(CreditsImages[14]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, woodData);
+	free(woodData);
+	
+	w = CreditsImages[15]->width;
+	h = CreditsImages[15]->height;
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[15]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char *metalData = buildAlphaData(CreditsImages[15]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, metalData);
+	free(metalData);
 }
 
 struct timespec CreditsTime;
@@ -1713,17 +1737,36 @@ void endCredits(Game *g, int keys[])
 	static int jmp = 0;
 	static float mov = 0, mov2 = 0;
 	static bool ending = false;
-	if (keys[XK_a] && mov < 0 && !ending)
+	static bool collide1 = false;
+	static bool collide2 = false;
+	static bool ontop = false;
+	static bool ontop1 = false;
+	static bool collideMoveR = true;
+	static bool collideMoveL = true;
+	static int MOVE = 0;
+	if (collideMoveR) 
+		MOVE+=5;
+	if (collideMoveL) 
+		MOVE-=5;
+	if (keys[XK_a] && mov < 0 && !ending && (!collide1 || jmp))
 		mov += 1;
-	if (keys[XK_d] && mov > -1271 && !ending)
+	if (keys[XK_d] && mov > -1271 && !ending && (!collide2 || jmp))
 		mov -= 1;
-	if (keys[XK_space] && !jmp && jmpspd == 0) {
+	if (keys[XK_space] && !jmp && (jmpspd == 0 || jmpspd == 65)) {
 		jmp = 1;
 	}
 	if (jmp) {
 		jmpspd += 5;
-	} else if (jmpspd > 0) {
+	} else if (jmpspd > 0 && (!ontop && !ontop1)) {
 		jmpspd-=5;
+	}
+	if (ontop && jmpspd >= 70) {
+			jmp = false;
+			jmpspd -= 5;
+		}
+	if (ontop1 && jmpspd >= 55) {
+		jmp = false;
+		jmpspd -= 5;
 	}
 	if (jmpspd >= 150) {
 		jmpspd = 150;
@@ -1832,18 +1875,80 @@ void endCredits(Game *g, int keys[])
 
 	glEnd();
 	glPopMatrix();
+	//////////CRATE////////////////
+	
+	w = CreditsImages[15]->width/10;
+	h = CreditsImages[15]->height/10;
+	if ((mov*5+3000+90) == res[0]/2)
+		collide1 = true;
+	else
+		collide1 = false;
+	if ((mov*5+3000-10) == res[0]/2)
+		collide2 = true;
+	else
+		collide2 = false;
+	if (((mov*5+3000-10) <= res[0]/2) && ((mov*5+3000+90) >= res[0]/2) && jmp)
+		ontop = true;
+	else if (((mov*5+3000-10) >= res[0]/2) || ((mov*5+3000+90) <= res[0]/2))
+		ontop = false;
+		
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[15]);
+	glTranslatef(mov*5+3000, -25, 0);
+	glScalef(1, 1, 1);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glBegin(GL_QUADS);
+	
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(0 , h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
+	glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
 
+	glEnd();
+	glPopMatrix();
 
+	//////////CRATEWOOD////////////////
+	
+	w = CreditsImages[14]->width/10;
+	h = CreditsImages[14]->height/10;
+	if (((mov*5+3500+60+MOVE) == res[0]/2) && !jmp)
+		collideMoveL = true;
+	else
+		collideMoveL = false;
+	if (((mov*5+3500-10+MOVE) == res[0]/2) && !jmp)
+		collideMoveR = true;
+	else
+		collideMoveR = false;
+	if (((mov*5+3500-10+MOVE) <= res[0]/2) && ((mov*5+3500+60+MOVE) >= res[0]/2) && jmp)
+		ontop1 = true;
+	else if (((mov*5+3500-10+MOVE) >= res[0]/2) || ((mov*5+3500+60+MOVE) <= res[0]/2))
+		ontop1 = false;
+		
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, CreditsTextures[14]);
+	glTranslatef(mov*5+3500+MOVE, -25, 0);
+	glScalef(1, 1, 1);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glBegin(GL_QUADS);
+	
+	glTexCoord2f(0.0f, 0.0f); glVertex2f(0 , h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h/2+ res[1]/2);
+	glTexCoord2f(1.0f, 1.0f); glVertex2f(w, res[1]/2 - h/2);
+	glTexCoord2f(0.0f, 1.0f); glVertex2f(0, res[1]/2 - h/2);
+
+	glEnd();
+	glPopMatrix();
 	/***********DUDE********************/
 	w = CreditsImages[11]->width;
 	h = CreditsImages[11]->height;
-	
+	std::cout << "Move : " << MOVE << std::endl;
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, CreditsTextures[11]);
 	if (ending) {
 	    mov2+=2;
 	}
-	std::cout << mov << std::endl;
 	glTranslatef(mov2, jmpspd, 0);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
