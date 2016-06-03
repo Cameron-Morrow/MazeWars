@@ -88,59 +88,7 @@ void drawBackground()
 {
 	glPushMatrix();
 	glTranslatef(res[0], 0, 0);
-/*
-	glBegin(GL_POLYGON);
-		glColor3ub(47, 47, 47);
-		glVertex2i(0, 0);
-		glColor3ub(84, 84, 84);
-		glVertex2i(-350, 0);
-		glColor3ub(48, 48, 48);
-		glVertex2i(-350, 120);
-		glColor3ub(54, 54, 54);
-		glVertex2i(-320, 150);
-		glColor3ub(84, 84, 84);
-		glVertex2i(0, 150);
-	glEnd();
 
-	glColor3ub(54, 54, 54);
-	glBegin(GL_POLYGON);
-		glVertex2i(-340, 10);
-		glVertex2i(-350, 0);
-		glVertex2i(-350, 120);
-		glVertex2i(-340, 115);
-	glEnd();
-
-	glColor3ub(179, 179, 179);
-	glBegin(GL_POLYGON);
-		glVertex2i(-340, 115);
-		glVertex2i(-350, 120);
-		glVertex2i(-320, 150);
-		glVertex2i(-315, 140);
-	glEnd();
-
-	glColor3ub(152, 152, 152);
-	glBegin(GL_POLYGON);
-		glVertex2i(-315, 140);
-		glVertex2i(-320, 150);
-		glVertex2i(0, 150);
-		glVertex2i(-15, 140);
-	glEnd();
-
-	glColor3ub(12, 12, 12);
-	glBegin(GL_POLYGON);
-		glVertex2i(-15, 140);
-		glVertex2i(0, 150);
-		glVertex2i(0, 0);
-		glVertex2i(-15,10);
-	glEnd();
-
-	glColor3ub(12, 12, 12);
-	glBegin(GL_POLYGON);
-		glVertex2i(0, 0);
-		glVertex2i(-350, 0);
-		glVertex2i(-340, 10);
-		glVertex2i(-15, 10);
-	glEnd();*/
 	glBegin(GL_POLYGON);
 		glColor3ub(47, 47, 47);
 		glVertex2i(0, 0);
@@ -154,13 +102,6 @@ void drawBackground()
 		glVertex2i(0, 950);
 	glEnd();
 
-	/*glColor3ub(54, 54, 54);
-	glBegin(GL_POLYGON);
-		glVertex2i(-140, 910);
-		glVertex2i(-150, 0);
-		glVertex2i(-150, 920);
-		glVertex2i(-140, 115);
-	glEnd();*/
 	glBegin(GL_POLYGON);
 		glColor3ub(47, 47, 47);
 		glVertex2i(-1100, 0);
@@ -175,12 +116,6 @@ void drawBackground()
 	glEnd();
 
 	glColor3ub(54, 54, 54);
-	/*glBegin(GL_POLYGON);
-		glVertex2i(-1240, 910);
-		glVertex2i(-1250, 0);
-		glVertex2i(-1250, 920);
-		glVertex2i(-1240, 115);
-	glEnd();*/
 	glBegin(GL_POLYGON);
 		glColor3ub(47, 47, 47);
 		glVertex2i(0, 0);
@@ -202,14 +137,6 @@ void drawBackground()
 		glVertex2i(-1240, 145);
 	glEnd();
 
-	/*glColor3ub(179, 179, 179);
-	glBegin(GL_POLYGON);
-		glVertex2i(-1240, 115);
-		glVertex2i(-1250, 120);
-		glVertex2i(-1220, 150);
-		glVertex2i(-1215, 140);
-	glEnd();*/
-
 	glColor3ub(152, 152, 152);
 	glBegin(GL_POLYGON);
 		glVertex2i(-1240, 140);
@@ -225,14 +152,6 @@ void drawBackground()
 		glVertex2i(0, 0);
 		glVertex2i(-15,10);
 	glEnd();
-
-	/*glColor3ub(12, 12, 12);
-	glBegin(GL_POLYGON);
-		glVertex2i(0, 0);
-		glVertex2i(-1250, 0);
-		glVertex2i(-1240, 10);
-		glVertex2i(-15, 10);
-	glEnd();*/
 
 	// now the top bar
 	glBegin(GL_POLYGON);
@@ -287,42 +206,6 @@ void drawBackground()
 		glVertex2i(-1240, 810);
 		glVertex2i(-15, 810);
 	glEnd();
-
-
-/*
-	glColor3ub(179, 179, 179);
-	glBegin(GL_POLYGON);
-		glVertex2i(-140, 115);
-		glVertex2i(-150, 120);
-		glVertex2i(-120, 150);
-		glVertex2i(-115, 140);
-	glEnd();
-
-	glColor3ub(152, 152, 152);
-	glBegin(GL_POLYGON);
-		glVertex2i(-115, 140);
-		glVertex2i(-120, 150);
-		glVertex2i(0, 150);
-		glVertex2i(-15, 140);
-	glEnd();
-
-	glColor3ub(12, 12, 12);
-	glBegin(GL_POLYGON);
-		glVertex2i(-15, 140);
-		glVertex2i(0, 150);
-		glVertex2i(0, 0);
-		glVertex2i(-15,10);
-	glEnd();
-
-	glColor3ub(12, 12, 12);
-	glBegin(GL_POLYGON);
-		glVertex2i(0, 0);
-		glVertex2i(-150, 0);
-		glVertex2i(-140, 10);
-		glVertex2i(-15, 10);
-	glEnd();
-*/
-
 
 	glPopMatrix();	
 }
@@ -565,7 +448,6 @@ void drawAmmo(Player x)
 	r.center = 0;
 	ggprint8b(&r, 16, 0x00ffffff, "Ammo:");
 }
-
 Ppmimage *livesImage = {NULL};
 GLuint livesTexture;
 void loadLivesSprite()
@@ -584,8 +466,6 @@ void loadLivesSprite()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, livesData);
 	free(livesData);
-	
-	
 }
 void drawLives(int x, int y)
 {
@@ -1632,15 +1512,19 @@ void endCredits(Game *g, int keys[])
 	static bool ontop1 = false;
 	static bool collideMoveR = true;
 	static bool collideMoveL = true;
-	static int MOVE = 0;
-	if (collideMoveR) 
-		MOVE+=5;
-	if (collideMoveL) 
-		MOVE-=5;
-	if (keys[XK_a] && mov < 0 && !ending && (!collide1 || jmp))
-		mov += 1;
-	if (keys[XK_d] && mov > -1271 && !ending && (!collide2 || jmp))
-		mov -= 1;
+	static float MOVE = 0.0f;
+
+	if (keys[XK_a] && mov < 0 && !ending && (!collide1 || jmp) \
+	&& !collideMoveL)
+		mov += 0.3f;
+	if (keys[XK_d] && mov > -1271 && !ending && (!collide2 || jmp) \
+	&& !collideMoveR)
+		mov -= 0.3f;
+	if (keys[XK_a] && mov < 0 && !ending && (!collide1 || jmp) && collideMoveL)
+		mov += 0.05f;
+	if (keys[XK_d] && mov > -1271 && !ending && (!collide2 || jmp) \
+	&& collideMoveR)
+		mov -= 0.05f;
 	if (keys[XK_space] && !jmp && (jmpspd == 0 || jmpspd == 65)) {
 		jmp = 1;
 	}
@@ -1664,7 +1548,14 @@ void endCredits(Game *g, int keys[])
 	if (mov <= -1270) {
 		ending = true;
 	}
-	
+	if (collideMoveR) {
+		MOVE+=2;
+	}
+	if (collideMoveL) {
+		MOVE-=2;
+	}
+	if (ontop && keys[XK_Down])
+		ontop = false;
 	glClear(GL_COLOR_BUFFER_BIT);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
@@ -1768,11 +1659,11 @@ void endCredits(Game *g, int keys[])
 	
 	w = CreditsImages[15]->width/10;
 	h = CreditsImages[15]->height/10;
-	if ((mov*5+3000+90) == res[0]/2)
+	if (((mov*5+3000+90) <= res[0]/2 + 2) && ((mov*5+3000+90) >= res[0]/2 - 2))
 		collide1 = true;
 	else
 		collide1 = false;
-	if ((mov*5+3000-10) == res[0]/2)
+	if (((mov*5+3000-10) <= res[0]/2 + 2) && ((mov*5+3000-10) >= res[0]/2 - 2))
 		collide2 = true;
 	else
 		collide2 = false;
@@ -1801,19 +1692,22 @@ void endCredits(Game *g, int keys[])
 	
 	w = CreditsImages[14]->width/10;
 	h = CreditsImages[14]->height/10;
-	if (((mov*5+3500+60+MOVE) == res[0]/2) && !jmp)
+	if ((((mov*5+3500+60+MOVE) <= res[0]/2 + 2) && ((mov*5+3500+60+MOVE) >= \
+	res[0]/2 - 2)) && !jmp)
 		collideMoveL = true;
 	else
 		collideMoveL = false;
-	if (((mov*5+3500-10+MOVE) == res[0]/2) && !jmp)
+	if ((((mov*5+3500-10+MOVE) <= res[0]/2 + 2) && ((mov*5+3500-10+MOVE) >= \
+	res[0]/2 - 2)) && !jmp)
 		collideMoveR = true;
 	else
 		collideMoveR = false;
-	if (((mov*5+3500-10+MOVE) <= res[0]/2) && ((mov*5+3500+60+MOVE) >= res[0]/2) && jmp)
+	if (((mov*5+3500-10+MOVE) <= res[0]/2) && ((mov*5+3500+60+MOVE) >= \
+	res[0]/2) && jmp)
 		ontop1 = true;
-	else if (((mov*5+3500-10+MOVE) >= res[0]/2) || ((mov*5+3500+60+MOVE) <= res[0]/2))
+	else if (((mov*5+3500-10+MOVE) >= res[0]/2) || ((mov*5+3500+60+MOVE) <= \
+	res[0]/2))
 		ontop1 = false;
-		
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, CreditsTextures[14]);
 	glTranslatef(mov*5+3500+MOVE, -25, 0);
