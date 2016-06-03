@@ -69,7 +69,7 @@ bool Pause = false;
 Ppmimage *testImage = NULL;
 GLuint testTexture;
 GLuint silhouetteTexture;
-bool QUIT = 0;
+int QUIT = 0;
 
 bool showtest = 0;
 Ppmimage *personImage1 = NULL;
@@ -169,9 +169,16 @@ int main(int argc, char *argv[])
 								enterPressed, downPressed, upPressed, keys);
 			} else if (Pause) {
 	
-			QUIT = PAUSE(&game, keys);
-			if (QUIT)
+			QUIT = PAUSE(&game, keys, VOLUME);
+			if (QUIT == 1)
 				return(0);
+			if (QUIT == 2) {
+				Restart(&game);
+				titleScreen = 1;
+				Pause = 0;
+			}
+			if (QUIT == 3)
+				Pause = 0;
 
 		} else if (winCondition) {
 				//test
@@ -188,9 +195,16 @@ int main(int argc, char *argv[])
 		}  
 		else if (Pause) {
 	
-			QUIT = PAUSE(&game, keys);
-			if (QUIT)
+			QUIT = PAUSE(&game, keys, VOLUME);
+			if (QUIT == 1)
 				return(0);
+			if (QUIT == 2) {
+				Restart(&game);
+				titleScreen = 1;
+				Pause = 0;
+			}
+			if (QUIT == 3)
+				Pause = 0;
 
 		} else {
 		    glClearColor(0.8,0.8,0.8,1.0);
