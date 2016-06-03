@@ -197,7 +197,8 @@ void renderCharacter(Person person, Game *g, float w, int keys[],
 		clock_gettime(CLOCK_REALTIME, &animationStart);
 	}
 
-	if ((keys[XK_w] || keys[XK_s] || axis[0] || axis[1]) && animationSpan < 10) {
+	if ((keys[XK_w] || keys[XK_s] || axis[0] || axis[1]) && 
+		animationSpan < 10) {
 		//cout << "movement" << endl;
 		glTexCoord2f(0.5f, 0.0f); glVertex2f(-w, w);
 		glTexCoord2f(1.0f, 0.0f); glVertex2f(w, w);
@@ -410,7 +411,7 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 
 		if ((downPressed || axis[7] > 0) && !optionsFlag) {
 			pressSpan1 += timeDiff(&pressStart1, &pressCurrent1);
-			if (pressSpan1 > .4) {
+			if (pressSpan1 > .6) {
 				cout << pressSpan1 << endl;
 				pressSpan1 = 0.0;
 				clock_gettime(CLOCK_REALTIME, &pressStart1);
@@ -434,7 +435,7 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 		clock_gettime(CLOCK_REALTIME, &pressCurrent2);
 		if ((upPressed || axis[7] < 0) && !optionsFlag) {
 			pressSpan2 +=timeDiff(&pressStart2, &pressCurrent2);
-			if (pressSpan2 > .4) {
+			if (pressSpan2 > .6) {
 				pressSpan2 = 0.0;
 				if (arrow[0] == 20) {
 					arrow[0] = 1;
@@ -769,13 +770,20 @@ void fps() {
 	ggprint16(&r, 0, 0xffffff, "FPS: %.2lf", currentfps);
 }
 
-int tmp = 0;
-
+static int tmp = 0;
+struct timespec graveCurrent, graveStart;
+double graveSpan;
 void graveKeyPress(int keys[]) {
-	
-	if (keys[XK_grave]) {
-		fpsActivator ^= keys[XK_grave];
+	if (!tmp) {
+	    clock_gettime(CLOCK_REALTIME, &graveStart);
+	    tmp++;
 	}
+	graveSpan = timeDiff(&graveStart, &graveCurrent);
+	if (keys[XK_grave] && graveSpan > .5) {
+		fpsActivator ^= 1;
+		tmp = 0;
+	}
+	clock_gettime(CLOCK_REALTIME, &graveCurrent);
 
 	if (fpsActivator) {
 		fps();
