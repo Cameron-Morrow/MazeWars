@@ -258,8 +258,8 @@ void renderEnemy(C &c, Game *g)
 	    getEnemyTexCoords(c, type, cx1, cx2, cy1, cy2);
 	    if (c.stats.vel[0] > 0) {}
 	    else { cx1 = cx1 * -1; cx2 = cx2 * -1; }
-	    glPushMatrix();
-	    glTranslatef(xdist, ydist, 0.0f);
+	    //glPushMatrix();
+	    //glTranslatef(xdist, ydist, 0.0f);
 	    glEnable(GL_ALPHA_TEST);
 	    glAlphaFunc(GL_GREATER, 0.0f);
 	    glBindTexture(GL_TEXTURE_2D, g->enemyTextures);
@@ -271,7 +271,7 @@ void renderEnemy(C &c, Game *g)
 		glEnd();
 		glDisable(GL_ALPHA_TEST);
 		glBindTexture(GL_TEXTURE_2D, 0);
-		glPopMatrix();
+		//glPopMatrix();
 	//}
 }
 

@@ -16,6 +16,8 @@
 #include <iostream>
 #include <string>
 #include "roseP.h"
+#include "davidV.h"
+#include "unistd.h"
 
 using std::cout;
 using std::endl;
@@ -59,48 +61,65 @@ void movement(Game *g)
 }
 
 //new checkController now with no deadzones and easy to read angles
-void checkController(int axis[], Game *g) 
+void checkController(int axis[], Game *g, int &controller) 
 { 
 	if (axis[1] || axis[0]) {
+		controller = 1;
 		float angle = atan2(axis[1], -axis[0]) / M_PI*180 + 180;
 		//cout << angle << endl;
 		if (angle >= 337.5 || angle <= 22.5 ) 
-			g->Player_1.stats.angle = 270;	
+		{
+			g->Player_1.stats.angle = 270;
+		}
 
-		else if (angle > 22.5 && angle <= 67.5) 
+		else if (angle > 22.5 && angle <= 67.5) {
 			g->Player_1.stats.angle = -45;
+		}
 
-		else if (angle > 67.5 && angle <= 112.5) 
+		else if (angle > 67.5 && angle <= 112.5) {
 			g->Player_1.stats.angle = 0;
+		}
 
-		else if (angle > 112.5 && angle <= 157.5) 
+		else if (angle > 112.5 && angle <= 157.5) {
 			g->Player_1.stats.angle = 45;
+		}
 
-		else if (angle > 157.5 && angle <= 202.5) 
+		else if (angle > 157.5 && angle <= 202.5) {
 			g->Player_1.stats.angle = 90;
+		}
 
-		else if (angle > 202.5 && angle <= 247.5) 
+		else if (angle > 202.5 && angle <= 247.5) {
 			g->Player_1.stats.angle = 135;
+		}
 
-		else if (angle > 247.5 && angle <= 292.5) 
+		else if (angle > 247.5 && angle <= 292.5) {
 			g->Player_1.stats.angle = 180;
+		} 
 
-		else if (angle > 292.5 && angle <=337.5) 
+		else if (angle > 292.5 && angle <=337.5) {
 			g->Player_1.stats.angle = 225;
+		}
 
 		movement(g);
+	}
+	else {
+		controller = 0;
 	}
 }
 
 void renderCrosshair(int axis[], Game *g, bool keyboard) 
 {
+	exchangeGpos(&g->gun, &g->Player_1);
+
 	int radius = 40;
 	int playerX = g->Player_1.stats.spos[0]+1;
 	int playerY = g->Player_1.stats.spos[1]+2;
 
 	//Draw Crosshair for aiming
-	if (keyboard == false) 
+	if (keyboard == false) {
 		crosshair.angle = atan2(axis[4], -axis[3]) / M_PI*180 + 180;
+		g->gun.stats.angle = crosshair.angle - 90;
+	}
 	else {
 		if (axis[XK_q]) {
 			crosshair.angle += .1f;
@@ -113,7 +132,7 @@ void renderCrosshair(int axis[], Game *g, bool keyboard)
 	float xComponent = radius * cos(crosshair.angle*M_PI/180);
 	float yComponent = radius * sin(crosshair.angle*M_PI/180);
 
-	glColor3f(.3f, 1.0f, .3f);
+	glColor3f(1.0f, 1.0f, 1.0f);
 
 	//create a 30px tall & wide crosshair centered on edge of circle
 	glBegin(GL_LINES);	
@@ -130,7 +149,7 @@ void renderShield(Game *g)
 	int playerX = g->Player_1.stats.spos[0]+1;
 	int playerY = g->Player_1.stats.spos[1]+2;
 
-	glColor3f(0.0f, 0.0f, 1.0f);
+	glColor3f(1.0f, 1.0f, 1.0f);
 	glEnable(GL_POINT_SMOOTH);
 	glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
 	glEnable(GL_BLEND);
@@ -162,11 +181,11 @@ Ppmimage* characterSelection(std::string characterColor)
 struct timespec animationCurrent, animationStart;
 double animationSpan = 0.0;
 void renderCharacter(Person person, Game *g, float w, int keys[], 
-	GLuint personTexture1)
+	int axis[], GLuint personTexture1)
 {
 	glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
 	glPushMatrix();
-	glTranslatef(person.pos[0], person.pos[1], person.pos[2]);	
+	glTranslatef(person.pos[0], person.pos[1], person.pos[2]);
 	glRotatef(g->Player_1.stats.angle, 0, 0, 1.0f);
 	glBindTexture(GL_TEXTURE_2D, personTexture1);
 	glEnable(GL_ALPHA_TEST);
@@ -178,7 +197,8 @@ void renderCharacter(Person person, Game *g, float w, int keys[],
 		clock_gettime(CLOCK_REALTIME, &animationStart);
 	}
 
-	if ((keys[XK_w] || keys[XK_s]) && animationSpan < 10) {
+	if ((keys[XK_w] || keys[XK_s] || axis[0] || axis[1]) && animationSpan < 10) {
+		//cout << "movement" << endl;
 		glTexCoord2f(0.5f, 0.0f); glVertex2f(-w, w);
 		glTexCoord2f(1.0f, 0.0f); glVertex2f(w, w);
 		glTexCoord2f(1.0f, 1.0f); glVertex2f(w, -w);
@@ -218,14 +238,20 @@ struct timespec bouldersCurrent, bouldersStart;
 struct timespec totCurrent, totStart;
 struct timespec logoCurrent, logoStart;
 struct timespec enterCurrent, enterStart;
+struct timespec enter2Current, enter2Start;
 struct timespec optionsCurrent, optionsStart;
 struct timespec characterCurrent, characterStart;
 struct timespec arrowCurrent, arrowStart;
 struct timespec arrowCurrent2, arrowStart2;
 struct timespec keyPressCurrent, keyPressStart;
+struct timespec pressCurrent1, pressStart1;
+struct timespec pressCurrent2, pressStart2;
+double pressSpan1 = 0.0;
+double pressSpan2 = 0.0;
 double bouldersSpan = 0.0;
 double logoSpan = 0.0;
 double enterSpan = 0.0;
+double enter2Span = 0.0;
 double optionsSpan = 0.0;
 double characterSpan = 0.0;
 double arrowSpan = 0.0;
@@ -237,17 +263,20 @@ double scalePos[3] = {0, 0, 0};
 int pos[3] = {0, yheight, 0};
 int posLogo[3] = {0, -50, 0};
 int posEnter[3] = {xwidth/2, 0, 0};
+int posEnter2[3] = {xwidth/2, 0, 0};
 int posOptions[3] = {xwidth/2+60, 0, 0};
 int arrow[3] = {0, 0, 0};
 int arrow2[3] = {0, 0, 0};
 int character[3] = {0, 0, 0};
 int sign[3] = {0, 0, 0};
+
 int optionsFlag = 0;
 int fpsActivator = 0;
 int boulderSound = 0;
 
 int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[], 
-	int enterPressed, int downPressed, int upPressed, int keys[])
+	int &enterPressed, int &downPressed, int &upPressed, int keys[], 
+	int axis[], int &aButton)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -293,7 +322,7 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 		glDisable(GL_ALPHA_TEST);
 
 		//Enter Maze
-		w = 315 + introImages[3]->width/2;
+		w = 300 + introImages[3]->width/2;
 		h = introImages[3]->height/2;
 		glPushMatrix();
 		glTranslatef(posEnter[0], posEnter[1], posEnter[2]);
@@ -303,10 +332,30 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glBegin(GL_QUADS);
 
-		glTexCoord2f(0.0f, 0.0f); glVertex2f(315 + xwidth/2, yheight/2);
+		glTexCoord2f(0.0f, 0.0f); glVertex2f(300 + xwidth/2, yheight/2);
 		glTexCoord2f(1.0f, 0.0f); glVertex2f(xwidth/2 + w, yheight/2);
 		glTexCoord2f(1.0f, 1.0f); glVertex2f(xwidth/2 + w, yheight/2 - h);
-		glTexCoord2f(0.0f, 1.0f); glVertex2f(315 + xwidth/2, yheight/2 - h);
+		glTexCoord2f(0.0f, 1.0f); glVertex2f(300 + xwidth/2, yheight/2 - h);
+
+		glEnd();
+		glDisable(GL_ALPHA_TEST);
+		glPopMatrix();
+
+		//Enter Maze 2
+		w = 300 + introImages[9]->width/2;
+		h = introImages[9]->height/2; 
+		glPushMatrix();
+		glTranslatef(posEnter2[0], posEnter2[1], posEnter2[2]);
+
+		glBindTexture(GL_TEXTURE_2D, introTextures[9]);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glBegin(GL_QUADS);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex2f(300 + xwidth/2, yheight/2 - 60);
+		glTexCoord2f(1.0f, 0.0f); glVertex2f(xwidth/2 + w, yheight/2- 60);
+		glTexCoord2f(1.0f, 1.0f); glVertex2f(xwidth/2 + w, yheight/2 - 60 - h);
+		glTexCoord2f(0.0f, 1.0f); glVertex2f(300 + xwidth/2, yheight/2 - 60 -h);
 
 		glEnd();
 		glDisable(GL_ALPHA_TEST);
@@ -314,7 +363,7 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 
 		//Options
 		w = 275 + introImages[4]->width/2;
-		h = -60 - introImages[4]->height/2;
+		h = introImages[4]->height/2;
 		glPushMatrix();
 		glTranslatef(posOptions[0], posOptions[1], posOptions[2]);
 
@@ -323,10 +372,10 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glBegin(GL_QUADS);
 
-		glTexCoord2f(0.0f, 0.0f); glVertex2f(xwidth/2 + 275, yheight/2 - 60);
-		glTexCoord2f(1.0f, 0.0f); glVertex2f(xwidth/2 + w, yheight/2 - 60);
-		glTexCoord2f(1.0f, 1.0f); glVertex2f(xwidth/2 + w, yheight/2 + h);
-		glTexCoord2f(0.0f, 1.0f); glVertex2f(xwidth/2 + 275, yheight/2 + h);
+		glTexCoord2f(0.0f, 0.0f); glVertex2f(xwidth/2 + 275, yheight/2 - 120);
+		glTexCoord2f(1.0f, 0.0f); glVertex2f(xwidth/2 + w, yheight/2 - 120);
+		glTexCoord2f(1.0f, 1.0f); glVertex2f(xwidth/2 + w, yheight/2 -120- h);
+		glTexCoord2f(0.0f, 1.0f); glVertex2f(xwidth/2 + 275, yheight/2 -120- h);
 
 		glEnd();
 		glDisable(GL_ALPHA_TEST);
@@ -352,20 +401,53 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 		glDisable(GL_ALPHA_TEST);
 		glPopMatrix();
 
+
 		//Arrow movement
-		if (downPressed && !optionsFlag) {
-			if (arrow[0] == 0) {
-				arrow[0] = 20;
-				arrow[1] = -60;
+		if (pressSpan1 == 0.0) {
+			clock_gettime(CLOCK_REALTIME, &pressStart1);
+		}
+		clock_gettime(CLOCK_REALTIME, &pressCurrent1);
+
+		if ((downPressed || axis[7] > 0) && !optionsFlag) {
+			pressSpan1 += timeDiff(&pressStart1, &pressCurrent1);
+			if (pressSpan1 > .4) {
+				cout << pressSpan1 << endl;
+				pressSpan1 = 0.0;
+				clock_gettime(CLOCK_REALTIME, &pressStart1);
+				if (arrow[0] == 0) {
+					arrow[0] = 1;
+					arrow[1] = -60;
+					downPressed = 0;
+				}
+				else if (arrow[0] == 1) {
+					arrow[0] = 20;
+					arrow[1] = -120;
+					cout << "pos 1 -> 2" << endl;
+				}
 			}
 			//cout << "down" << endl;
 		}
-		else if (upPressed && !optionsFlag) {
-			if (arrow[0] == 20) {
-				arrow[0] = 0;
-				arrow[1] = 0;
+
+		if (pressSpan2 == 0.0) {
+			clock_gettime(CLOCK_REALTIME, &pressStart2);
+		}
+		clock_gettime(CLOCK_REALTIME, &pressCurrent2);
+		if ((upPressed || axis[7] < 0) && !optionsFlag) {
+			pressSpan2 +=timeDiff(&pressStart2, &pressCurrent2);
+			if (pressSpan2 > .4) {
+				pressSpan2 = 0.0;
+				if (arrow[0] == 20) {
+					arrow[0] = 1;
+					arrow[1] = -60;
+					cout << "pos 2->1" << endl;
+				}
+				else if (arrow[0] == 1) {
+					arrow[0] = 0;
+					arrow[1] = 0;
+					cout << "pos 1->0" << endl;
+				}
+				//cout << "up" << endl;
 			}
-			//cout << "up" << endl;
 		}
 
 		//Sign
@@ -405,6 +487,10 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 	if (enterSpan > .00005) {
 		enterSpan = 0.0;
 		clock_gettime(CLOCK_REALTIME, &enterStart);
+	}
+	if (enter2Span > .00005) {
+		enter2Span = 0.0;
+		clock_gettime(CLOCK_REALTIME, &enter2Start);
 	}
 	if (optionsSpan > .00005) {
 		optionsSpan = 0.0;
@@ -456,21 +542,30 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 
 	clock_gettime(CLOCK_REALTIME, &logoCurrent);
 	clock_gettime(CLOCK_REALTIME, &enterCurrent);
+	clock_gettime(CLOCK_REALTIME, &enter2Current);
 	clock_gettime(CLOCK_REALTIME, &optionsCurrent);
 	clock_gettime(CLOCK_REALTIME, &arrowCurrent);
-	if (enterPressed) {
+	if ((enterPressed || aButton) && !optionsFlag) {
 		//cout << "enter pressed" << endl;
 		logoSpan += timeDiff(&logoStart, &logoCurrent);
 		enterSpan += timeDiff(&enterStart, &enterCurrent);
+		enter2Span += timeDiff(&enter2Start, &enter2Current);
 		optionsSpan += timeDiff(&optionsStart, &optionsCurrent);
 		arrowSpan += timeDiff(&arrowStart, &arrowCurrent);
 
 		if (posLogo[1] < 6000 && logoSpan > .01) {
 				posLogo[1] += 5;
+				//cout << posLogo[1] << endl;
 		}
 
 		if (fabs(posEnter[0]) < xwidth && enterSpan > .00005) {
 			posEnter[0] += 5;
+			//cout << posEnter[0] << endl;
+		}
+
+		if (fabs(posEnter2[0]) < xwidth && enter2Span > .00005) {
+			posEnter2[0] += 5;
+
 		}
 
 		if (posOptions[0] < xwidth && optionsSpan > .00005) {
@@ -480,25 +575,91 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 		if (arrow[0] < xwidth && arrowSpan > .00005) {
 			arrow[0] += 5;
 		}
-
-		if (!arrow[1]) {
+		if (arrow[1] == 0) {
 			if (posLogo[1] > 320) {
 				scale[0] += .05; scalePos[0] -= .05;
 				scale[1] += .05; scalePos[1] -= .05;
 				//cout << scale[1] << endl;
 			}
+				// h = introImages[8]->height;
+				
+				// w = introImages[8]->width;
+				// glPushMatrix();
+				// glBindTexture(GL_TEXTURE_2D, introTextures[8]);
+	
+				//glTranslatef(mov2, jmpspd, 0);
+				// glEnable(GL_ALPHA_TEST);
+				// glAlphaFunc(GL_GREATER, 0.0f);
+				// glBegin(GL_QUADS);
+					
+				//clock_gettime(CLOCK_REALTIME, &characterCurrent);
+				//characterSpan += timeDiff(&characterStart, &characterCurrent);
+				
+				//if (characterSpan >= 100) {
+				//	characterSpan = 0.0;
+				//	clock_gettime(CLOCK_REALTIME, &characterStart);
+				//}
+				//if (characterSpan < 10) {
+					// glTexCoord2f(0.0f, 0.0f); glVertex2f(0, h);
+					// glTexCoord2f(1.0f, 0.0f); glVertex2f(w, h);
+					// glTexCoord2f(1.0f, 1.0f); glVertex2f(w, 0);
+					// glTexCoord2f(0.0f, 1.0f); glVertex2f(0, 0);
+				// } else if (characterSpan < 40) {
+				// 	glTexCoord2f(0.1666f, 0.0f); glVertex2f(xwidth/2, yheight/2);
+				// 	glTexCoord2f(0.333f, 0.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2);
+				// 	glTexCoord2f(0.333f, 1.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2 - h);
+				// 	glTexCoord2f(0.1666f, 1.0f); glVertex2f(xwidth/2, yheight/2-h);
+				// } else if (characterSpan < 60) {
+				// 	glTexCoord2f(0.3333f, 0.0f); glVertex2f(xwidth/2, yheight/2);					
+				// 	glTexCoord2f(0.50f, 0.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2);
+				// 	glTexCoord2f(0.50f, 1.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2 - h);
+				// 	glTexCoord2f(0.3333f, 1.0f); glVertex2f(xwidth/2, yheight/2-h);
+				// } else if (characterSpan < 80) {
+				// 	glTexCoord2f(0.50f, 0.0f); glVertex2f(xwidth/2, yheight/2);	
+				// 	glTexCoord2f(0.666f, 0.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2);
+				// 	glTexCoord2f(0.666f, 1.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2 - h);
+				// 	glTexCoord2f(0.50f, 1.0f); glVertex2f(xwidth/2, yheight/2-h);
+				// //} else if ( ((keys[XK_d] || keys[XK_a]) || ending)) {
+				// //	glTexCoord2f(0.666f, 0.0f); glVertex2f(xwidth/2, yheight/2);
+				// //	glTexCoord2f(0.8333f, 0.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2);
+				// //	glTexCoord2f(0.8333f, 1.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2 - h);
+				// //	glTexCoord2f(0.666f, 1.0f); glVertex2f(xwidth/2, yheight/2-h);
+				// } else {
+				// 	glTexCoord2f(0.8333f, 0.0f); glVertex2f(xwidth/2, yheight/2);	
+				// 	glTexCoord2f(1.0f, 0.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2);
+				// 	glTexCoord2f(1.0f, 1.0f); glVertex2f(xwidth/2 + w * (1/6), yheight/2 - h);
+				// 	glTexCoord2f(0.8333f, 1.0f); glVertex2f(xwidth/2, yheight/2-h);
+				// }
+
+				//glEnd();
+				//glPopMatrix();
+			//}
 			
 			if (posLogo[1] == 700) {
 				return 0;
 			}
 		}
 
+		else if (arrow[1] == -60) {
+			if (posLogo[1] > 320) {
+				scale[0] += .05; scalePos[0] -= .05;
+				scale[1] += .05; scalePos[1] -= .05;
+				//cout << scale[1] << endl;
+			}
+			if (posLogo[1] == 700) {
+				return 2;
+			}
+		}
 		else if (arrow[1] && posLogo[1] > 320) {
-			optionsFlag = 1;
-			//enterPressed = 0;
 			if (sign[1] > -yheight-250) {
 				sign[1]-=10;
 				//cout << sign[1] << endl;
+			}
+			else {
+				optionsFlag = 1;
+				enterPressed = 0;
+				aButton = 0;
+
 			}
 		}
 
@@ -539,8 +700,40 @@ int renderTitleScreen(GLuint introTextures[], Ppmimage *introImages[],
 			glDisable(GL_ALPHA_TEST);
 			glPopMatrix();
 
-			//if ()
+			/*if ((downPressed || axis[7] > 0) && !enterPressed) {
+				if (arrow2[0] == 0) {
+					arrow2[0] = 20;
+					arrow2[1] = -60;
+				}
+				//cout << "down" << endl;
+			}
+			else if ((upPressed || axis[7] < 0) && !enterPressed) {
+				if (arrow2[0] == 20) {
+					arrow2[0] = 0;
+					arrow2[1] = 0;
+				}
+				//cout << "up" << endl;
+			}*/
 		}
+		if ((enterPressed || aButton) && !arrow[2]) {
+			//cout << "level1" << endl;
+			if (sign[1] < yheight+250) {
+			//	cout << "level2" << endl;
+				sign[1]+=10;
+				//cout << sign[1] << endl;
+			}
+			else {
+				enterPressed = 0;
+				aButton = 0;
+				optionsFlag = 0;
+			}
+			//if (sign[1] > 200) {
+				if (posLogo[1] > -45) {
+					posLogo[1] -= 5;
+					//cout << posLogo[1] << endl;
+				}
+			//}
+		}		
 	}
 
 	graveKeyPress(keys);

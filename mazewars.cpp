@@ -93,6 +93,8 @@ Person personc;
 int enterPressed = 0;
 int downPressed = 0;
 int upPressed = 0;
+int aButton = 0;
+static int controller = 0;
 
 //function prototypes
 void initXWindows(void);
@@ -151,7 +153,7 @@ int main(int argc, char *argv[])
 			physicsCountdown -= physicsRate;
 		}
 		if (argc == 1) {
-			if (titleScreen) {
+			if (titleScreen == 1) {
 				if (keys[XK_Return]) {
 					enterPressed = keys[XK_Return];
 				}
@@ -165,8 +167,12 @@ int main(int argc, char *argv[])
 					downPressed = 0;
 					enterPressed = 0;
 				}
+				if (joy[0]) {
+					aButton = joy[0];
+				}
 				titleScreen = renderTitleScreen(introTextures, introImages, 
-								enterPressed, downPressed, upPressed, keys);
+								enterPressed, downPressed, upPressed, keys,
+								axis, aButton);
 			} else if (Pause) {
 	
 			QUIT = PAUSE(&game, keys, VOLUME);
@@ -228,7 +234,8 @@ void cleanupXWindows(void)
 
 void set_title(void)
 {
-	const char image[15] = {'i','m','a','g','e','s','/','H','e','a','d','.','p','n','g'};
+	const char *image = "images/Head.png";
+
 	//Set the window title bar.
 	XMapWindow(dpy, win);
 	XStoreName(dpy, win, "Maze Wars");
@@ -333,8 +340,10 @@ void init_opengl(void)
 	introImages[5] = ppm6GetImage((char*)"images/Arrow.ppm");
 	introImages[6] = ppm6GetImage((char*)"images/sign.ppm");
 	introImages[7] = ppm6GetImage((char*)"images/Arrow.ppm");
-	
-	//mazeImage = ppm6GetImage((char*)"images/maze1.ppm");
+	introImages[8] = ppm6GetImage((char*)"parallax/Dude.ppm");
+	introImages[9] = ppm6GetImage((char*)"images/enterBold2.ppm");
+
+	mazeImage = ppm6GetImage((char*)"images/maze1.ppm");
 
 	glGenTextures(1, &testTexture);
 	glGenTextures(1, &personTexture1);
@@ -346,6 +355,9 @@ void init_opengl(void)
 	glGenTextures(1, &introTextures[4]); //optionsTexture
 	glGenTextures(1, &introTextures[5]); //ArrowTexture
 	glGenTextures(1, &introTextures[6]); //signTexture
+	glGenTextures(1, &introTextures[7]); //arrow2texture
+	glGenTextures(1, &introTextures[8]); //dude texture
+	glGenTextures(1, &introTextures[9]); //enter2Texture
 
 	glGenTextures(1, &mazeTexture);
 
@@ -486,8 +498,29 @@ void init_opengl(void)
 		GL_UNSIGNED_BYTE, arrow2Data);
 	free(arrow2Data);
 
+	//dude texture
+	w = introImages[8]->width;
+	h = introImages[8]->height;
+	glBindTexture(GL_TEXTURE_2D, introTextures[8]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char *dudeData = buildAlphaData(introImages[8]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, dudeData);
+	free(dudeData);
+
+	w = introImages[9]->width;
+	h = introImages[9]->height;
+	glBindTexture(GL_TEXTURE_2D, introTextures[9]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	unsigned char *enter2Data = buildAlphaData(introImages[9]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, enter2Data);
+	free(enter2Data);
+
 	//maze texture
-	/*w = mazeImage->width;
+	w = mazeImage->width;
 	h = mazeImage->height;
 	glBindTexture(GL_TEXTURE_2D, mazeTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -495,7 +528,7 @@ void init_opengl(void)
 	unsigned char *mazeData = buildAlphaData(mazeImage);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, mazeData);
-	free(mazeData);	*/
+	free(mazeData);	
 
 
 	loadEndCreditsTextures();
@@ -589,7 +622,9 @@ void check_mouse(XEvent *e, Game *g)
 		savey = e->xbutton.y;
 	}
 	//point player at mouse
-	pointPlayer(g, savex, savey);
+	if (!controller) {
+		pointPlayer(g, savex, savey);
+	}
 }
 
 int check_keys(XEvent *e)
@@ -714,16 +749,19 @@ void physics(Game *g)
 		}
 	}
 	if (axis[0] || axis[1] ||  axis[4] || axis[5]) {	
-		checkController(axis, g);
+		checkController(axis, g, controller);
+
 	}
 
 	if (keys[XK_n]) {
 		render_xbox1(g);
 	}
 
-	if ((keys[XK_space] || joy[0]) && g->Player_1.Current_Ammo > 0 && 
-		  g->Player_1.Current_Health > 0 && !Pause && !winCondition) {
+	if ((keys[XK_space] || (joy[0] && (axis[3] || axis[4]))) 
+		&& g->Player_1.Current_Ammo > 0 && g->Player_1.Current_Health > 0 && 
+		!Pause && !winCondition) {
 		g->Player_1.stats.angle = g->gun.stats.angle;
+
 		//a little time between each bullet
 		struct timespec bt;
 		clock_gettime(CLOCK_REALTIME, &bt);
@@ -822,12 +860,21 @@ void render(Game *g)
 	//if(animationSpan > 60/1000.0f) {	
 	//	clock_gettime(CLOCK_REALTIME, &animationStart);
 	//}
-	drawGBlocks(g);
+	if (titleScreen == 0) {
+		drawGBlocks(g);
+	}
+	else if (titleScreen == 2) {
+		render_maze(g, mazeTexture, mazeImage);
+	}
 	//Draw the Player_1
 	//if(g->Player_1.Current_Health > 0 && !g->Player_1.gameOver)
 	//	drawOType(g->Player_1, g);
 
 	play_sounds(6);
+	if (!a) {
+		play_sounds(6,1);
+		a++;
+	}
 	//render_maze(g, mazeTexture, mazeImage);
 
 		
@@ -850,22 +897,23 @@ void render(Game *g)
 	//drawHealthPack(100, 800, 0, g);
 	float w = personImage1->width/4;
 
-	renderEnemy(g->mon[6], g);
+	//renderEnemy(g->mon[6], g);
 
 	if (g->Player_1.gameOver == false)
-		//renderCharacter(person, g, w, keys, personTexture1); 
-		renderCharacter(g->Player_1, g, w, keys, personTexture1);
+		renderCharacter(person, g, w, keys, axis, personTexture1); 
+		//renderCharacter(g->Player_1, g, w, keys, personTexture1);
 
 	for (int i=0; i<g->nbullets; i++) {
 		Bullet *b = &g->barr[i];
 		if (b != NULL)
-			drawBullet(g, b, 0.0, 0.0, 0.0);	
+			drawBullet(g, b, 1.0, 1.0, 1.0);	
 	}
 	for (int i = 0; i < 5; i++) {
-		if (keys[XK_w] && g->mon[i].alive && !Pause && !g->Player_1.gameOver) {
+		if ((keys[XK_w] || (axis[0] || axis[1])) && g->mon[i].alive && 
+			!Pause && !g->Player_1.gameOver) {
 			g->mon[i].gameMove(1);
 		}
-		else if (keys[XK_s] && g->mon[i].alive) {
+		else if ((keys[XK_s] || (axis[0] || axis[1])) && g->mon[i].alive) {
 			g->mon[i].gameMove(0);
 		}
 		if (g->mon[i].alive && !Pause) {
@@ -883,9 +931,9 @@ void render(Game *g)
 	graveKeyPress(keys);
 	//Keystroke for R
 	if (keys[XK_r]) {
-                pressR(g);
+		pressR(g);
 		play_sounds(7);
-         }
+	}
 	getVolume(VOLUME);
 	if (g->Player_1.lives == 0) {
 		g->Player_1.gameOver = true;

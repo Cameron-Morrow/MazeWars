@@ -110,7 +110,7 @@ void load_sounds()
     alSourcei(alSource[5], AL_BUFFER, alBuffer[5]);
     
     //Background music.
-    alBuffer[6] = alutCreateBufferFromFile("./sound/parabolix_cavern.wav");
+    alBuffer[6] = alutCreateBufferFromFile("./sound/mazeBackgroundMusic.wav");
     alGenSources(1, &alSource[6]);
     alSourcei(alSource[6], AL_BUFFER, alBuffer[6]);
     
