@@ -492,10 +492,10 @@ void drawLives(int x, int y)
 void GameOver()
 {
 	Rect r;
-	r.bot = res[0]/2;
-	r.left = res[1]/2;
+	r.bot = res[0]/2-20;
+	r.left = res[1]/2-80;
 	r.center = 0;
-	ggprint8b(&r, 160, 0x00ff0000, "GAME OVER \n F6 TO RESTART");
+	ggprint40(&r, 160, 0x00ff0000, "GAME OVER \n F6 TO RESTART");
 }
 void Restart(Game *x)
 {
